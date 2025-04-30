@@ -1,17 +1,19 @@
-import express, { json } from "express"
-import dotenv from "dotenv/config"
+import dotenv from "dotenv";
+import { app } from "./app.js";
+import { connectDb } from "./config/connectDb.js";
+import { port } from "./constant.js";
 
-const app = express()
-const port = process.env.Port || 3030
+dotenv.config();
 
-
-app.use(json())
-
-app.get('/', (req, res)=>{
-    res.send('Happy coding')
-})
-
-app.listen(port, ()=>{
-    console.log(`Server is running on port http://localhost:${port}`)
-})
-
+;(async () => {
+  try {
+    await connectDb();
+    app.listen(port, () => {
+      console.log(`Server is Running: http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.log(`error in server.js ${error}`);
+    process.exit(1);
+  }
+})();
+ 
