@@ -19,9 +19,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routes
-app.get('/', (req,res)=>{
-    res.send('happy coding')
-})
+// app.get('/', (req,res)=>{
+//     res.send('happy coding')
+// })
 
 
 // error Handler MiddleWare
