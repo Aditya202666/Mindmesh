@@ -10,6 +10,8 @@ const registerUser = asyncHandler(async (req, res) => {
   const filePath = req.file?.path;
   const { fullName, email, password } = req.body;
 
+  console.log(fullName)
+
   const missingFields = [fullName, email, password].some(
     (field) => field.trim() === ""
   );
@@ -20,14 +22,8 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exists.");
   }
 
-  //validation
-//   const checkFullName = isAlphaNumeric(fullName)
-//   if(!checkFullName) throw new ApiError(400, "Only alphanumeric characters are allowed.")
+  
 
-//   const checkEmail = isValidEmail(email)
-//   if(!checkEmail) throw new ApiError(400, "Please enter a valid email.")
-
-// if(password.length < 8) throw new ApiError(400, "Password must be 8 Characters");
 
 
   res.status(200).json( new ApiResponse(200, "yoyo"))

@@ -4,7 +4,7 @@ const registerValidator = [
   body("fullName")
     .trim()
     .notEmpty()
-    .withMessage("Username is required")
+    .withMessage("FullName is required")
     .isAlphanumeric()
     .withMessage("Username must be alphanumeric"),
 
