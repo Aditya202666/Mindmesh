@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { type } from "os";
 
 const userSchema = new mongoose.Schema(
   {
@@ -12,9 +13,9 @@ const userSchema = new mongoose.Schema(
       maxLength: [20, "Name can't be bigger than 20 characters."],
       validate: {
         validator: function (v) {
-          return /^[A-Za-z]+(?: [A-Za-z]+)*$/.test(v);
+          return /^[a-zA-Z0-9\s]+$/.test(v);
         },
-        message: "Name can only contain letters and spaces.",
+        message: "Name can only contain letters and numbers.",
       },
     },
 
@@ -33,7 +34,8 @@ const userSchema = new mongoose.Schema(
     },
 
     avatar: {
-      type: String,
+      url:{type: String},
+      publicId:{ type: String}
     },
 
     workspaces: [
@@ -67,22 +69,22 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    verificationOtp: {
+    accountVerificationOtp: {
       type: String,
       default: "",
     },
 
-    verificationOtpExpiry: {
+    accountVerificationOtpExpiry: {
       type: Number,
       default: 0,
     },
 
-    passwordOtp: {
+    passwordResetOtp: {
       type: String,
       default: "",
     },
 
-    passwordOtpExpiry: {
+    passwordResetOtpExpiry: {
       type: Number,
       default: 0,
     },

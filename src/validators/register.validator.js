@@ -4,20 +4,22 @@ const registerValidator = [
   body("fullName")
     .trim()
     .notEmpty()
-    .withMessage("FullName is required")
+    .withMessage("FullName is required.")
     .isAlphanumeric()
-    .withMessage("Username must be alphanumeric"),
+    .withMessage("FullName must be alphanumeric."),
 
   body("email")
     .trim()
     .normalizeEmail()
     .isEmail()
-    .withMessage("Please enter a valid email"),
+    .withMessage("Please enter a valid email."),
 
-  body("password")
+    body("password")
     .trim()
     .isLength({ min: 8 })
-    .withMessage("Password must be at least 8 characters"),
-];
+    .withMessage("Password must be at least 8 characters")
+    .isLength({ max: 25 })
+    .withMessage("Password can't be more than 25 characters"),
+  ];
 
 export { registerValidator };

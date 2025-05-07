@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 const validateResult = (req, res, next) => {
 
   let errors = validationResult(req);
-      console.log(errors)
+      // console.log(errors)
   if (!errors.isEmpty()) {
     // let a = errors.array().map(err => err.msg)
     // console.log(a)
