@@ -5,6 +5,7 @@ export const corsOrigin = "*";
 
 export const cookieName1 = 'Mind'
 export const cookieName2 = 'Mesh'
+export const cookieName3 = 'RefreshToken'
 
 export const secureCookieOptions = {
     httpOnly: true,
