@@ -13,6 +13,18 @@ const taskSchema = new mongoose.Schema(
       maxLength: 2000,
     },
 
+    workspace: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Workspace",
+      required: true,
+    },
+
+    project: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+      required: true,
+    },
+
     assignedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -68,13 +80,7 @@ const taskSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: [
-        "To Do",
-        "In Progress",
-        "Blocked",
-        "Completed",
-        "Canceled",
-      ],
+      enum: ["To Do", "In Progress", "Blocked", "Completed", "Canceled"],
       default: "To Do",
     },
 

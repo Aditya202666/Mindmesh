@@ -13,6 +13,7 @@ import {
   secureCookieOptions,
   unsecureCookieOptions,
 } from "../constant.js";
+import mongoose from "mongoose";
 
 const registerUser = asyncHandler(async (req, res) => {
   const filePath = req.file?.path;
@@ -112,4 +113,42 @@ const logoutUser = asyncHandler(async (req, res) => {
   .json(new ApiResponse(200, "Logout Successfully."));
 });
 
-export { registerUser, loginUser, logoutUser };
+const getUserProfile = asyncHandler(async (req, res) => {
+
+  const id = req.params.id; // somehow id behave as number in new mongoose.Types.ObjectId(id)
+
+  const user = await userModel.aggregate([
+    { $match: { _id: new mongoose.Types.ObjectId(`${id}`) } }, // Convert string to ObjectId
+    {
+      $lookup: {
+        from: "tasks",
+        localField: "tasks",
+        foreignField: "_id",
+        as: "tasks",
+        pipeline: [
+          {
+
+          }
+        ]
+      }
+    },
+    // {
+    //   $project:{
+    //     fullName: 1,
+    //     email: 1,
+    //     avatar: 1,
+    //     tasks: 1
+    //   }
+    // }
+  ])
+
+  if (!user) {
+    throw new ApiError(404, "User not found.");
+  }
+
+  console.log(user)
+
+  res.status(200).json(new ApiResponse(200, "User found.", user));  
+});
+
+export { registerUser, loginUser, logoutUser, getUserProfile };

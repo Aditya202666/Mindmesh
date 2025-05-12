@@ -5,7 +5,7 @@ const activitySchema = new mongoose.Schema({
     content:{
         type:String,
         required:true,
-        maxLength:100
+        maxLength:200
     },
 
     task:{
@@ -13,14 +13,14 @@ const activitySchema = new mongoose.Schema({
         ref:"Task"
     },
 
-    user:{
+    writtenBy:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     },
 
     commentType: {
         type: String,
-        enum: ["comment", "bug", "info", "question"],
+        enum: ["comment", "bug", "info", "question" ],
         default: "comment"
       }
 

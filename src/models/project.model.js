@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema(
   {
@@ -32,13 +32,6 @@ const projectSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      },
-    ],
-
-    tasks: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Task",
       },
     ],
   },

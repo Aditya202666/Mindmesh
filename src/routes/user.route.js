@@ -1,5 +1,5 @@
 import Router from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { getUserProfile, loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { registerValidator } from "../validators/register.validator.js";
 import { validateResult } from "../middlewares/validator.middleware.js";
@@ -29,6 +29,13 @@ router
   .post(
     verifyToken,
     logoutUser
+  );
+
+router
+  .route("/:id")
+  .get(
+    verifyToken,
+    getUserProfile
   );
 
 export default router;
