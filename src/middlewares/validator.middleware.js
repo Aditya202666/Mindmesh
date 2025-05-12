@@ -11,7 +11,7 @@ const validateResult = (req, res, next) => {
     throw new ApiError(400, `${errors.errors[0].msg}`);
   }
 
-
+ 
   next();
 };
 

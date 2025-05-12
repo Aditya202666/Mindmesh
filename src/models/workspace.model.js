@@ -11,6 +11,7 @@ const workspaceSchema = new mongoose.Schema(
     description: {
       type: String,
       maxLength: 200,
+      required: true,
     },
 
     owner: {

@@ -15,9 +15,19 @@ import {
 } from "../constant.js";
 import mongoose from "mongoose";
 
+const checkIsUsernameTaken = async(username) =>{
+
+  const existingUser = await userModel.findOne({ username });
+  if (existingUser) {
+    return true
+  }else{
+    return false
+  }
+}
+
 const registerUser = asyncHandler(async (req, res) => {
   const filePath = req.file?.path;
-  const { fullName, email, password } = req.body;
+  const {username, fullname, email, password } = req.body;
 
   // console.log(fullName, assetId)
 
@@ -26,8 +36,13 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exists.");
   }
 
+  const isUsernameTaken = await checkIsUsernameTaken(username)
+  if (isUsernameTaken) {
+    throw new ApiError(409, "Username already exists.");
+  }
+
   let avatar = {
-    url: `https://avatar.iran.liara.run/username?username=${fullName}`,
+    url: `https://avatar.iran.liara.run/username?username=${fullname}`,
     publicId: "",
   };
 
@@ -36,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
     avatar = { url: uploadResponse.url, publicId: uploadResponse.public_id };
   }
 
-  const user = new userModel({ fullName, email, password, avatar });
+  const user = new userModel({ fullname, username, email, password, avatar });
 
   const accessToken = user.generateAccessToken();
   const refreshToken = user.generateRefreshToken();
@@ -62,9 +77,11 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
 
-  const user = await userModel.findOne({ email });
+  console.log({ username, email, password });
+
+  const user = await userModel.findOne({$or:[{username}, {email}]});
 
   if (!user) {
     throw new ApiError(401, "Invalid Credentials");
@@ -80,7 +97,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const refreshToken = user.generateRefreshToken();
 
   user.refreshToken = refreshToken;
-  await user.save();
+  await user.save({ validateBeforeSave: false });
 
   res
     .status(200)

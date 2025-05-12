@@ -1,11 +1,27 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { type } from "os";
 
 const userSchema = new mongoose.Schema(
   {
-    fullName: {
+    username:{
+      type:String,
+      required:true,
+      unique:true,
+      index:true,
+      trim:true,
+      lowercase:true,
+      minLength:[3,"Username can't be smaller than 3 characters."],
+      maxLength:[20,"Username can't be bigger than 20 characters."],
+      validate: {
+        validator: function (v) {
+          return /^[a-zA-Z0-9]+$/.test(v);
+        },
+        message: "Username can only contain letters and numbers.",
+      },
+    },
+
+    fullname: {
       type: String,
       required: [true, "Name is required."],
       trim: true,

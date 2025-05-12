@@ -1,9 +1,8 @@
 import Router from "express";
 import { getUserProfile, loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
-import { registerValidator } from "../validators/register.validator.js";
 import { validateResult } from "../middlewares/validator.middleware.js";
-import { loginValidator } from "../validators/login.validator.js";
+import { loginValidator, registerValidator } from "../validators/user.validator.js";
 import { verifyToken } from "../middlewares/jwtAuthentication.middleware.js";
 
 const router = Router();
