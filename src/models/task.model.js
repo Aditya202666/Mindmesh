@@ -72,7 +72,6 @@ const taskSchema = new mongoose.Schema(
         "To Do",
         "In Progress",
         "Blocked",
-        "In Review",
         "Completed",
         "Canceled",
       ],
@@ -85,33 +84,16 @@ const taskSchema = new mongoose.Schema(
       default: "None",
     },
 
-    activities:[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref:"Activity"
-        }
+    activities: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Activity",
+      },
     ],
 
     isCompleted: {
       type: Boolean,
       default: false,
-    },
-
-    approval: {
-      type: Boolean,
-      default: false,
-    },
-
-    isApproved: {
-      type: Boolean,
-      validate: {
-        validator: function (val) {
-          if (this.approval === true && val !== true) {
-            return false;
-          }
-          return true;
-        },
-      },
     },
   },
   {

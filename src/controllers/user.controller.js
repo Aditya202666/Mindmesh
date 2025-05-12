@@ -98,9 +98,18 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-const logoutUser = asyncHandler( async(req, res)=>{
+const logoutUser = asyncHandler(async (req, res) => {
+  const user = req.user;
 
-  res.json(req.cookies)
-})
+  user.refreshToken = "";
+  await user.save({ validateBeforeSave: false });
+
+  res
+  .status(200)
+  .clearCookie(cookieName1)
+  .clearCookie(cookieName2)
+  .clearCookie(cookieName3)
+  .json(new ApiResponse(200, "Logout Successfully."));
+});
 
 export { registerUser, loginUser, logoutUser };

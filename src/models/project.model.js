@@ -5,7 +5,7 @@ const projectSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      maxLength: 50
+      maxLength: 50,
     },
 
     description: {
@@ -18,27 +18,21 @@ const projectSchema = new mongoose.Schema(
       default: false,
     },
 
-    isCompleted:{
-        type: Boolean,
-        default:false
+    isCompleted: {
+      type: Boolean,
+      default: false,
     },
 
     manager: {
-      id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    members: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
-      from: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-
-    members:[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref:'User'
-        }
     ],
 
     tasks: [
