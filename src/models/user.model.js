@@ -4,15 +4,15 @@ import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
-    username:{
-      type:String,
-      required:true,
-      unique:true,
-      index:true,
-      trim:true,
-      lowercase:true,
-      minLength:[3,"Username can't be smaller than 3 characters."],
-      maxLength:[20,"Username can't be bigger than 20 characters."],
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      trim: true,
+      lowercase: true,
+      minLength: [3, "Username can't be smaller than 3 characters."],
+      maxLength: [20, "Username can't be bigger than 20 characters."],
       validate: {
         validator: function (v) {
           return /^[a-zA-Z0-9]+$/.test(v);
@@ -50,9 +50,16 @@ const userSchema = new mongoose.Schema(
     },
 
     avatar: {
-      url:{type: String},
-      publicId:{ type: String}
+      url: { type: String },
+      publicId: { type: String },
     },
+
+    tasks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "PersonalTask",
+      },
+    ],
 
     workspaces: [
       {

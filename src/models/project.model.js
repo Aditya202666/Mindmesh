@@ -23,15 +23,30 @@ const projectSchema = new mongoose.Schema(
       default: false,
     },
 
-    manager: {
+    workspaceId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Workspace",
+      required: true,
     },
+
+    tasks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ProjectTask",
+      },
+    ],
+
 
     members: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        memberId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        joinedFrom: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
   },

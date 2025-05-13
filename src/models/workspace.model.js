@@ -14,24 +14,17 @@ const workspaceSchema = new mongoose.Schema(
       required: true,
     },
 
-    owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-
     members: [
       {
-        member: {
+        memberId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
         },
-        role: {
-          type: String,
-          enum: ["admin", "manager", "member"],
-          default: "member",
+        role:{
+            type: Number,
+            enum: [0, 1, 2, 3], // owner, admin, manager, member
+            default: 0
         },
-
         joinedFrom: {
           type: Date,
           default: Date.now,
