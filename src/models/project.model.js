@@ -23,6 +23,19 @@ const projectSchema = new mongoose.Schema(
       default: false,
     },
 
+    createdBy: {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      role: {
+        type: Number,
+        enum: [0, 1], // owner, admin,
+        default: 1,
+      },
+    },
+
     workspaceId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Workspace",
@@ -35,7 +48,6 @@ const projectSchema = new mongoose.Schema(
         ref: "ProjectTask",
       },
     ],
-
 
     members: [
       {

@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-const createWorkspaceValidator = [
+const workspaceValidator = [
   body("name")
     .trim()
     .notEmpty()
@@ -17,4 +17,4 @@ const createWorkspaceValidator = [
 
 ];
 
-export { createWorkspaceValidator };
+export { workspaceValidator };

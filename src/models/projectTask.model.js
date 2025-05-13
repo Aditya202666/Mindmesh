@@ -32,9 +32,9 @@ const projectTaskSchema = new mongoose.Schema(
     },
 
     assignedByRole: {
-      type: String,
-      enum: ["Owner", "Admin", "Manager"],
-      default: "Manager",
+      type: Number,
+      enum: [0, 1, 2], // owner, admin, manager,  member can't create task in project
+      default: 2,
     },
 
     assignedTo: [

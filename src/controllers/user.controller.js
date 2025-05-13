@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
   await user.save();
 
   res
-    .status(201)
+    .status(201) 
     .cookie(cookieName1, accessToken, secureCookieOptions)
     .cookie(cookieName2, accessToken, unsecureCookieOptions)
     .cookie(cookieName3, refreshToken, secureCookieOptions)
