@@ -31,7 +31,7 @@ router
   );
 
 router
-  .route("/:id")
+  .route("/me")
   .get(
     verifyToken,
     getUserProfile

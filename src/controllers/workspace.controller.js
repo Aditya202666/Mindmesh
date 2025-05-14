@@ -14,7 +14,7 @@ const createWorkspace = asyncHandler(async (req, res) => {
     members: [
       {
         memberId: user._id,
-        role: 0,
+        role: 0, 
         joinedFrom: Date.now(),
       },
     ],
@@ -149,4 +149,4 @@ const getWorkspaceDetails = asyncHandler(async (req, res) => {
   );
 });
 
-export { createWorkspace, editWorkspace, deleteWorkspace };
+export { createWorkspace, editWorkspace, deleteWorkspace, getWorkspaceDetails };

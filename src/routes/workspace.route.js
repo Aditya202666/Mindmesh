@@ -1,26 +1,44 @@
-import Router from 'express'        
+import Router from "express";
 import { verifyToken } from "../middlewares/jwtAuthentication.middleware.js";
-import { workspaceValidator } from '../validators/workspace.validator.js';
-import { createWorkspace, deleteWorkspace } from '../controllers/workspace.controller.js';
-import { validateResult } from '../middlewares/validator.middleware.js';
-import { checkAuthorization } from '../middlewares/authorityCheck.middleware.js';
-
+import { workspaceValidator } from "../validators/workspace.validator.js";
+import {
+  createWorkspace,
+  deleteWorkspace,
+  editWorkspace,
+  getWorkspaceDetails,
+} from "../controllers/workspace.controller.js";
+import { validateResult } from "../middlewares/validator.middleware.js";
+import { checkAuthorization } from "../middlewares/authorityCheck.middleware.js";
 
 const router = Router();
 
-router.route('/create').post(verifyToken, workspaceValidator, validateResult, createWorkspace)
+//public routes
+
+router
+  .route("/create")
+  .post(verifyToken, workspaceValidator, validateResult, createWorkspace);
 
 //protected routes
 
 //edit workspace route
-router.route("/edit/:workspaceId").patch(verifyToken, workspaceValidator, validateResult, checkAuthorization, editWorkspace);
+router
+  .route("/edit/:workspaceId")
+  .patch(
+    verifyToken,
+    workspaceValidator,
+    validateResult,
+    checkAuthorization,
+    editWorkspace
+  );
 
 //delete workspace route
-router.route("/delete/:workspaceId").delete(verifyToken, checkAuthorization, deleteWorkspace);
+router
+  .route("/delete/:workspaceId")
+  .delete(verifyToken, checkAuthorization, deleteWorkspace);
 
 //get workspace details route  // to render the page
-router.route("/details/:workspaceId").get(verifyToken, checkAuthorization, getWorkspaceDetails);
-
-
+router
+  .route("/details/:workspaceId")
+  .get(verifyToken, checkAuthorization, getWorkspaceDetails);
 
 export default router;

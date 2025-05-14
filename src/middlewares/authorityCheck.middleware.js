@@ -9,11 +9,10 @@ const checkAuthorization = asyncHandler(async (req, res, next) => {
 
   // 4 is unauthorized, 3 is member, 2 is manager, 1 is admin, 0 is owner
 
-  const workspace = await workspaceModel.findById(workspaceId);
-
+  const workspace = await workspaceModel.findById({ _id: workspaceId });
   if (!workspace) {
     throw new ApiError(404, "Not Found");
-  }
+  }  
 
   //add workspace to body
   req.workspace = workspace;
