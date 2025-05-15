@@ -49,7 +49,7 @@ app.get('/', (req, res)=>{
 })
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/workspace", workspaceRoute);
-app.use("/api/v1/project", projectRoute);
+app.use("/api/v1/workspace/:workspaceId/project", projectRoute);
 app.use("/api/v1/task", taskRoute);
 app.use("/api/v1/activity", activityRoute);
 

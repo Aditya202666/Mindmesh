@@ -23,7 +23,7 @@ const workspaceSchema = new mongoose.Schema(
         role:{
             type: Number,
             enum: [0, 1, 2, 3], // owner, admin, manager, member
-            default: 0
+            default: 4
         },
         joinedFrom: {
           type: Date,

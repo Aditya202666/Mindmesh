@@ -1,6 +1,6 @@
-import Router from "express";
+import {Router} from "express";
 import { verifyToken } from "../middlewares/jwtAuthentication.middleware.js";
-import { workspaceValidator } from "../validators/workspace.validator.js";
+import { bodyAndDescriptionValidator } from "../validators/workspace.validator.js";
 import {
   createWorkspace,
   deleteWorkspace,
@@ -13,10 +13,11 @@ import { checkAuthorization } from "../middlewares/authorityCheck.middleware.js"
 const router = Router();
 
 //public routes
+router.use(verifyToken);
 
 router
   .route("/create")
-  .post(verifyToken, workspaceValidator, validateResult, createWorkspace);
+  .post(bodyAndDescriptionValidator(), validateResult, createWorkspace);
 
 //protected routes
 
@@ -24,8 +25,7 @@ router
 router
   .route("/edit/:workspaceId")
   .patch(
-    verifyToken,
-    workspaceValidator,
+    bodyAndDescriptionValidator(),
     validateResult,
     checkAuthorization,
     editWorkspace
@@ -34,11 +34,11 @@ router
 //delete workspace route
 router
   .route("/delete/:workspaceId")
-  .delete(verifyToken, checkAuthorization, deleteWorkspace);
+  .delete(checkAuthorization, deleteWorkspace);
 
 //get workspace details route  // to render the page
 router
   .route("/details/:workspaceId")
-  .get(verifyToken, checkAuthorization, getWorkspaceDetails);
+  .get(checkAuthorization, getWorkspaceDetails);
 
 export default router;

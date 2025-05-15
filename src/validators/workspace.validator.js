@@ -1,20 +1,25 @@
 import { body } from "express-validator";
 
-const workspaceValidator = [
-  body("name")
+const bodyAndDescriptionValidator =(title = 50, desc = 200) =>{
+
+  return [
+    body("name")
     .trim()
     .notEmpty()
     .withMessage("Name is required.")
-    .isLength({ max: 50 })
+    .isLength({ max: title })
     .withMessage("Name can't be more than 50 characters."),
+    
+    body("description")
+    .trim()
+    .notEmpty()
+    .withMessage("Description is required.")
+    .isLength({ max: desc })
+    .withMessage("Description can't be more than 200 characters."),
+    
+  ];
 
-  body("description")
-  .trim()
-  .notEmpty()
-  .withMessage("Description is required.")
-  .isLength({ max: 200 })
-  .withMessage("Description can't be more than 200 characters."),
+  // return val;
+}
 
-];
-
-export { workspaceValidator };
+export { bodyAndDescriptionValidator };
