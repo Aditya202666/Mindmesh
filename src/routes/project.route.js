@@ -1,7 +1,7 @@
 import {Router} from 'express'        
 import { verifyToken } from "../middlewares/jwtAuthentication.middleware.js";
 import {checkAuthorization} from "../middlewares/authorityCheck.middleware.js"
-import { createProject } from '../controllers/project.controller.js';
+import { createProject, deleteProject, updateProject } from '../controllers/project.controller.js';
 import { bodyAndDescriptionValidator } from '../validators/workspace.validator.js';
 
 
@@ -20,6 +20,8 @@ router.route('/update/:projectId').patch(bodyAndDescriptionValidator(), updatePr
 router.route('/delete/:projectId').delete(deleteProject);
 
 // get project details
+router.route("/details/:projectId").get(getProjectDetails);
+
 // invite member
 // remove member
 // assign manager

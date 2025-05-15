@@ -1,3 +1,4 @@
+import { ADMIN, MANAGER } from "../constant.js";
 import { projectModel } from "../models/project.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -7,7 +8,7 @@ const createProject = asyncHandler(async (req, res) => {
   const user = req.user;
   const authority = req.authority;
 
-  if (authority > 1) {
+  if (authority > ADMIN) {
     throw new ApiError(403, "Forbidden");
   }
 
@@ -36,7 +37,7 @@ const createProject = asyncHandler(async (req, res) => {
 const updateProject = asyncHandler(async (req, res) => {
   const id = req.params.projectId;
   const authority = req.authority;
-  if (authority > 1) {
+  if (authority > ADMIN) {
     throw new ApiError(403, "Forbidden");
   }
 
@@ -69,7 +70,8 @@ const updateProject = asyncHandler(async (req, res) => {
 const deleteProject = asyncHandler(async (req, res) => {
   const id = req.params.projectId;
   const authority = req.authority;
-  if (authority > 1) {
+  const workspace = req.workspace;
+  if (authority > ADMIN) {
     throw new ApiError(403, "Forbidden");
   }
 
@@ -85,8 +87,28 @@ const deleteProject = asyncHandler(async (req, res) => {
 
   await project.deleteOne()
 
+  workspace.projects.pull(project._id);
+  await workspace.save();
+
+
   res.status(200).json(new ApiResponse(200, "Project deleted successfully."));
 
 });
 
-export { createProject, updateProject, deleteProject };
+const getProjectDetails = asyncHandler(async(req,res)=>{
+
+  const id = req.params.projectId;
+  const authority = req.authority;
+  const userId = req.user._id;
+
+  if (!project) {
+    throw new ApiError(404, "Project not found");
+  }
+
+  if(authority > MANAGER ){ // means user 
+    // todo:- complete this pipeline
+  }
+
+})
+
+export { createProject, updateProject, deleteProject, getProjectDetails };

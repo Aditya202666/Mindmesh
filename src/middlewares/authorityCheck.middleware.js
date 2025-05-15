@@ -1,11 +1,12 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { workspaceModel } from "../models/workspace.model.js";
 import { ApiError } from "../utils/ApiError.js";
+import { UNAUTHORIZED } from "../constant.js";
 
 const checkAuthorization = asyncHandler(async (req, res, next) => {
   const workspaceId = req.params.workspaceId;
   const userId = req.user._id;
-  req.authority = 4; // default is unauthorized
+  req.authority = UNAUTHORIZED; // default is unauthorized
 
   // 4 is unauthorized, 3 is member, 2 is manager, 1 is admin, 0 is owner
 
@@ -23,7 +24,7 @@ const checkAuthorization = asyncHandler(async (req, res, next) => {
     }
   });
 
-  if (req.authority === 4) {
+  if (req.authority === UNAUTHORIZED) {
     throw new ApiError(403, "Forbidden");
   }
 

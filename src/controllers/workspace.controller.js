@@ -1,3 +1,4 @@
+import { ADMIN } from "../constant.js";
 import { userModel } from "../models/user.model.js";
 import { workspaceModel } from "../models/workspace.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -32,7 +33,7 @@ const editWorkspace = asyncHandler(async (req, res) => {
   const authority = req.authority;
   const workspace = req.workspace;
 
-  if (authority > 1) {
+  if (authority > ADMIN) {
     throw new ApiError(403, "User is not Authorized");
   }
 
@@ -75,7 +76,7 @@ const getWorkspaceDetails = asyncHandler(async (req, res) => {
   let workspaceDetails;
   const authority = req.authority;
 
-  if (authority > 2) {
+  if (authority > ADMIN) {
     // means user is owner or admin
     workspaceDetails = await workspaceModel.aggregate([
       {
@@ -106,6 +107,15 @@ const getWorkspaceDetails = asyncHandler(async (req, res) => {
           localField: "projects",
           foreignField: "_id",
           as: "projects",
+          pipeline: [{
+            $project:{
+              name: 1,
+              description: 1,
+              isConfidential: 1,
+              isCompleted: 1
+            }
+            //todo:- add new fields for project details 1) number of members in a project and number of tasks in a project
+          }]
         },
       },
     ]);
