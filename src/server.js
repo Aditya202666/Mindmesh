@@ -5,15 +5,14 @@ import { port } from "./constant.js";
 
 dotenv.config();
 
-;(async () => {
-  try {
-    await connectDb();
-    app.listen(port, () => {
-      console.log(`Server is Running: http://localhost:${port}`);
-    });
-  } catch (error) {
-    console.log(`error in server.js ${error}`);
-    process.exit(1);
-  }
+(async () => {
+    try {
+        await connectDb();
+        app.listen(port, () => {
+            console.log(`Server is Running: http://localhost:${port}`);
+        });
+    } catch (error) {
+        console.log(`error in server.js ${error}`);
+        process.exit(1);
+    }
 })();
- 
