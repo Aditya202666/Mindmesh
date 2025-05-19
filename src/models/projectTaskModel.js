@@ -58,6 +58,11 @@ const projectTaskSchema = new mongoose.Schema(
             },
         ],
 
+        approval:{
+            type: Boolean,
+            default: false,
+        },
+
         assignedBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "IdCard",
