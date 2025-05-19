@@ -40,6 +40,7 @@ const projectTaskSchema = new mongoose.Schema(
         subTasks: [subTaskSchema],
 
 
+
         isCompleted: {
             type: Boolean,
             default: false,
@@ -49,6 +50,25 @@ const projectTaskSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+
+        assignedTo: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "IdCard",
+            },
+        ],
+
+        assignedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "IdCard",
+        },
+
+        activityLog: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "ActivityLog",
+            },
+        ],
 
         status:{
             type: String,
