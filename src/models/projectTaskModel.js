@@ -16,7 +16,7 @@ const subTaskSchema = new mongoose.Schema({
     },
 });
 
-const personalTaskSchema = new mongoose.Schema(
+const projectTaskSchema = new mongoose.Schema(
     {
 
         title: {
@@ -30,7 +30,7 @@ const personalTaskSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
-            maxLength: 200,
+            maxLength: 1000,
         },
 
         dueDate: {
@@ -38,6 +38,7 @@ const personalTaskSchema = new mongoose.Schema(
         },
 
         subTasks: [subTaskSchema],
+
 
         isCompleted: {
             type: Boolean,
@@ -64,12 +65,12 @@ const personalTaskSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-personalTaskSchema.index({ title: "text", desc: "text" });
+projectTaskSchema.index({ title: "text", desc: "text" });
 
 
 
-const personalTaskModel =
-    mongoose.models.PersonalTask ||
-    mongoose.model("PersonalTask", personalTaskSchema);
+const projectTaskModel =
+    mongoose.models.ProjectTask ||
+    mongoose.model("ProjectTask", projectTaskSchema);
 
-export default personalTaskModel;
+export default projectTaskModel;

@@ -38,6 +38,13 @@ const userSchema = new mongoose.Schema(
             url: String,
         },
 
+        tasks: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "PersonalTask",
+            },
+        ],
+
         password: {
             type: String,
             required: true,

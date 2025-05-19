@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
-const workspaceSchema = new mongoose.Schema(
+const projectSchema = new mongoose.Schema(
     {
         idToken: {
             type: [String],
             validate: {
                 validator: function (value) {
-                    return value.length === 1;
+                    return value.length === 2;
                 },
-                message: "IdToken Array must have exactly 1 items.",
+                message: "IdToken Array must have exactly 2 items.",
             },
         },
 
@@ -33,17 +33,17 @@ const workspaceSchema = new mongoose.Schema(
             },
         ],
 
-        projects: [
+        tasks: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Project",
-            },
-        ],
+                ref: "ProjectTask",
+            }
+        ]
     },
     { timestamps: true }
 );
 
-const workspaceModel =
-    mongoose.models.Workspace || mongoose.model("Workspace", workspaceSchema);
+const projectModel =
+    mongoose.models.Project || mongoose.model("Project", projectSchema);
 
-export default workspaceModel;
+export default projectModel;
