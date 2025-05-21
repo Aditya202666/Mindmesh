@@ -7,7 +7,7 @@
     "dev": "nodemon src/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Aditya Kumar",
   "license": "ISC",
   "description": "",
   "devDependencies": {
@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.0",
     "multer": "^1.4.5-lts.2",
-    "nanoid": "^5.1.5"
+    "nanoid": "^5.1.5",
+    "nodemailer": "^7.0.3"
   }
 }

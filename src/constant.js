@@ -3,21 +3,19 @@ export const corsOrigin = "*";
 export const DB_NAME = "Mindmesh"
 
 
-export const cookieName1 = 'Mind'
-export const cookieName2 = 'Mesh'
-export const cookieName3 = 'RefreshToken'
+export const MindCookie = 'Mind'
+export const MeshCookie = 'Mesh'
+export const refreshTokenCookie = 'RefreshToken'
 
 export const secureCookieOptions = {
     httpOnly: true,
     secure: true,
     sameSite: 'none',
-    maxAge: 1000 * 60 * 60 * 24 // one day
   }
 export const unsecureCookieOptions = {
     httpOnly: false,
     secure: true,
     sameSite: 'none',
-    maxAge: 1000 * 60 * 60 * 24 // one day
   }
 
 export const workspacePrefix = 'workspace'

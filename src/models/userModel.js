@@ -29,8 +29,8 @@ const userSchema = new mongoose.Schema(
 
         profession: {
             type: String,
-            minLength: 3,
             maxLength: 20,
+            default: "",
         },
 
         profilePic: {
@@ -45,20 +45,59 @@ const userSchema = new mongoose.Schema(
             },
         ],
 
+        workspaces: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Workspace",
+            },
+        ],
+
         password: {
             type: String,
             required: true,
-            minLength: 8,
-            maxLength: 25,
         },
- 
+
+        isVerified: {
+            type: Boolean,
+            default: false,
+        },
+
+        refreshToken: {
+            type: String,
+            default: "",
+        },
+
+        otpSentTime: {
+            type: Number,
+            default: 0,
+        },
+
+        accountVerificationOtp: {
+            type: String,
+            default: "",
+        },
+
+        accountVerificationOtpExpiry: {
+            type: Number,
+            default: 0,
+        },
+
+        forgotPasswordOtp: {
+            type: String,
+            default: "",
+        },
+
+        forgotPasswordOtpExpiry: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 );
 
-userSchema.pre("save", async (next) => {
+userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
-        next();
+        return next();
     }
     this.password = await bcryptjs.hash(this.password, 10);
     next();
@@ -66,6 +105,22 @@ userSchema.pre("save", async (next) => {
 
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcryptjs.compare(password, this.password);
+};
+
+userSchema.methods.generateRefreshToken = function () {
+    return jwt.sign({ id: this._id, username: this.username }, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    });
+};
+
+userSchema.methods.generateAccessToken = function () {
+    return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    });
+};
+
+userSchema.methods.generateOtp = function () {
+    return Math.floor(100000 + Math.random() * 900000);
 };
 
 const userModel = mongoose.models.User || mongoose.model("User", userSchema);

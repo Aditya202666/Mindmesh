@@ -45,7 +45,7 @@ const registerValidator = [
         .withMessage("Fullname must be alphanumeric.")
         .isLength({ max: 20 })
         .withMessage("Fullname can't be more than 20 characters."),
-        
+
     body("email")
         .trim()
         .normalizeEmail()

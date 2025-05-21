@@ -1,4 +1,3 @@
-// todo: make schema properly
 import mongoose from "mongoose";
 
 const idCardSchema = new mongoose.Schema(

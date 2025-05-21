@@ -6,7 +6,7 @@ import rateLimit from "express-rate-limit";
 import { xss } from 'express-xss-sanitizer'
 
 import { corsOrigin } from "./constant.js";
-import errorHandler from "./middlewares/errorHandler.js";
+import errorHandler from "./middlewares/apiErrorHandler.js";
 
 const app = express();
 
@@ -36,7 +36,11 @@ app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// routes
+import authRoute from "./routes/authRoute.js";
 
+
+app.use("/api/v1/auth", authRoute);
 
 // error Handler MiddleWare
 app.use(errorHandler);
