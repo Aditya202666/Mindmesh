@@ -60,4 +60,37 @@ const registerValidator = [
         .withMessage("Password can't be more than 25 characters"),
 ];
 
-export { loginValidator, registerValidator };
+const updateProfileValidator = [
+    body("username")
+        .trim()
+        .notEmpty()
+        .withMessage("Username is required.")
+        .isLength({ min: 3 })
+        .withMessage("Username must be at least 3 characters.")
+        .isLength({ max: 20 })
+        .withMessage("Username can't be more than 20 characters.")
+        .isAlphanumeric()
+        .withMessage("Username must be alphanumeric."),
+
+    body("fullname")
+        .trim()
+        .notEmpty()
+        .withMessage("Fullname is required.")
+        .matches(/^[a-zA-Z0-9\s]+$/)
+        .withMessage("Fullname must be alphanumeric.")
+        .isLength({ max: 20 })
+        .withMessage("Fullname can't be more than 20 characters."),
+
+    body('profession')
+        .trim()
+        .optional()
+        .matches(/^[a-zA-Z\s]+$/)
+        .withMessage("Profession can't be other characters.")
+        .isLength({ max: 30 })
+        .withMessage("Profession can't be more than 30 characters."),
+]
+
+
+export { loginValidator, registerValidator, updateProfileValidator };
+
+
