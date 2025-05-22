@@ -20,3 +20,8 @@ export const unsecureCookieOptions = {
 
 export const workspacePrefix = 'workspace'
 export const projectPrefix = 'project'
+
+export const OwnerAccessLevel = 4
+export const AdminAccessLevel = 3
+export const ManagerAccessLevel = 2
+export const MemberAccessLevel = 1

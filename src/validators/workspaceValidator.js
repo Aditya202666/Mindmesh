@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
-const bodyAndDescriptionValidator = (title = 50, desc = 200) => {
+const bodyAndDescriptionValidator = (title = 50, desc = 500) => {
     return [
         body("name")
             .trim()

@@ -15,6 +15,7 @@ import {
     uploadOnCloudinary,
 } from "../utils/cloudinary.js";
 import { generateOtpEmailTemplate, sendEmail } from "../utils/sendEmail.js";
+import { transformUser } from "../utils/transformData.js";
 
 const checkUsernameExists = async (newUsername, currentUsername = "") => {
     if (newUsername.toLowerCase() === currentUsername) return false;
@@ -25,17 +26,6 @@ const checkUsernameExists = async (newUsername, currentUsername = "") => {
     return false;
 };
 
-const transformUser = (user) => {
-    return {
-        username: user.username,
-        fullname: user.fullname,
-        email: user.email,
-        profilePic: user.profilePic,
-        isVerified: user.isVerified,
-        workspaces: user.workspaces,
-        tasks: user.tasks,
-    };
-};
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, fullname, email, password } = req.body;
@@ -113,6 +103,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     user.refreshToken = refreshToken;
     await user.save();
+
+    console.log(user)
 
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)

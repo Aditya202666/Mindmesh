@@ -26,10 +26,32 @@ const workspaceSchema = new mongoose.Schema(
             maxLength: 500,
         },
 
+        notices: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Notice",
+            },
+        ],
+
+        invitations: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Invitation",
+            },
+        ],
+
+        joinRequests: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Invitation",
+            },
+        ],
+
         members: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "IdCard",
+                required: true,
             },
         ],
 

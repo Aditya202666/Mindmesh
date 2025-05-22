@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
             url: String,
         },
 
-        tasks: [
+        personalTasks: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "PersonalTask",
@@ -47,8 +47,22 @@ const userSchema = new mongoose.Schema(
 
         workspaces: [
             {
+                id: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Workspace",
+                    required: true,
+                },
+                name: {
+                    type: String,
+                    required: true,
+                },
+            },
+        ],
+
+        invitations: [
+            {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Workspace",
+                ref: "Invitation",
             },
         ],
 
@@ -108,9 +122,13 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 userSchema.methods.generateRefreshToken = function () {
-    return jwt.sign({ id: this._id, username: this.username }, process.env.REFRESH_TOKEN_SECRET, {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
-    });
+    return jwt.sign(
+        { id: this._id, username: this.username },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+        }
+    );
 };
 
 userSchema.methods.generateAccessToken = function () {

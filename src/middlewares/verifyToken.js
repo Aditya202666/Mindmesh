@@ -19,6 +19,8 @@ const verifyToken = asyncHandler(async (req, res, next) => {
         throw new ApiError(401, "Unauthorized, Please login again.");
     }
 
+    console.log(user._id.equals(decodedToken.id));
+
     req.user = user;
 
     next();

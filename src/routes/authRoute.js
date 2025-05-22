@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.js";
 import inputErrorHandler from "../middlewares/inputErrorHandler.js";
+import verifyToken from "../middlewares/verifyToken.js";
 import {
     loginValidator,
     registerValidator,
@@ -20,7 +21,6 @@ import {
     verifyAccountVerificationOtp,
     verifyForgotPasswordOtp,
 } from "../controllers/authController.js";
-import verifyToken from "../middlewares/verifyToken.js";
 
 const router = Router();
 
@@ -33,30 +33,26 @@ router
         registerUser
     );
 
-router.route("/refresh-token").post(refreshToken);
-
 router.route("/login").post(loginValidator, inputErrorHandler, loginUser);
 
 router.route("/logout").post(verifyToken, logoutUser);
 
-router
-    .route("/account-verification-otp")
-    .post(verifyToken, sendAccountVerificationOtp);
+router.route("/refresh-token").post(refreshToken);
+
+router.route("/account/otp").post(verifyToken, sendAccountVerificationOtp);
 
 router
-    .route("/verify-account-verification-otp")
+    .route("/verify/account/otp")
     .post(verifyToken, verifyAccountVerificationOtp);
 
-router.route("/forget-password-otp").post(sendForgotPasswordOtp);
+router.route("password/otp").post(sendForgotPasswordOtp);
+
+router.route("/verify/password/otp").post(verifyToken, verifyForgotPasswordOtp);
+
+router.route("/password").patch(verifyToken, changePassword);
 
 router
-    .route("/verify-forget-password-otp")
-    .post(verifyToken, verifyForgotPasswordOtp);
-
-router.route("/change-password").patch(verifyToken, changePassword);
-
-router
-    .route("update-profile")
+    .route("/profile")
     .patch(
         verifyToken,
         updateProfileValidator,
@@ -65,10 +61,13 @@ router
     );
 
 router
-    .route("/update-profilePic")
+    .route("/profilePic")
     .patch(verifyToken, upload.single("avatar"), updateProfilePic);
 
-router.route("/delete-profilePic").delete(verifyToken, deleteProfilePic);
+router.route("/profilePic").delete(verifyToken, deleteProfilePic);
+
+// todo: will be implemented later when workspace feature is added
+// router.route('join-workspace')
 
 // -- will be implemented later after all other routes are done
 // todo: add delete profile

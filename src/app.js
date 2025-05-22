@@ -38,9 +38,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // routes
 import authRoute from "./routes/authRoute.js";
+import workspaceRoute from "./routes/workspaceRoute.js";
 
 
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/workspace", workspaceRoute);
 
 // error Handler MiddleWare
 app.use(errorHandler);
