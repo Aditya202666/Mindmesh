@@ -8,19 +8,17 @@ const idCardSchema = new mongoose.Schema(
             required: true,
         },
 
-        access: [
-            {
-                token: {
-                    type: String,
-                    required: true,
-                },
-                accessLevel: {
-                    type: Number,
-                    enum: [1, 2, 3, 4],
-                    required: true,
-                },
+        access: {
+            token: {
+                type: String,
+                required: true,
             },
-        ],
+            accessLevel: {
+                type: Number,
+                enum: [1, 2, 3, 4],
+                required: true,
+            },
+        },
     },
     { timestamps: true }
 );

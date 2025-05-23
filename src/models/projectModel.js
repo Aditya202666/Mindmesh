@@ -2,15 +2,12 @@ import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema(
     {
-        idToken: {
-            type: [String],
-            validate: {
-                validator: function (value) {
-                    return value.length === 2;
-                },
-                message: "IdToken Array must have exactly 2 items.",
-            },
+       idToken: {
+            type: String,
+            unique: true,
+            required: true,
         },
+        
 
         name: {
             type: String,
@@ -26,10 +23,27 @@ const projectSchema = new mongoose.Schema(
             maxLength: 500,
         },
 
+
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+
+        isConfidential: {
+            type: Boolean,
+            default: false,
+        },
+
+        isCompleted: {
+            type: Boolean,
+            default: false,
+        },
+
         members: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "IdCard",
+                ref: "User",
             },
         ],
 

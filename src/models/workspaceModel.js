@@ -3,13 +3,9 @@ import mongoose from "mongoose";
 const workspaceSchema = new mongoose.Schema(
     {
         idToken: {
-            type: [String],
-            validate: {
-                validator: function (value) {
-                    return value.length === 1;
-                },
-                message: "IdToken Array must have exactly 1 items.",
-            },
+            type: String,
+            unique: true,
+            required: true,
         },
 
         name: {
@@ -26,13 +22,6 @@ const workspaceSchema = new mongoose.Schema(
             maxLength: 500,
         },
 
-        notices: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Notice",
-            },
-        ],
-
         invitations: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -40,20 +29,7 @@ const workspaceSchema = new mongoose.Schema(
             },
         ],
 
-        joinRequests: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Invitation",
-            },
-        ],
-
-        members: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "IdCard",
-                required: true,
-            },
-        ],
+        members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 
         projects: [
             {

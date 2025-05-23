@@ -76,6 +76,11 @@ const userSchema = new mongoose.Schema(
             default: false,
         },
 
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
+
         refreshToken: {
             type: String,
             default: "",
@@ -106,6 +111,7 @@ const userSchema = new mongoose.Schema(
             default: 0,
         },
     },
+
     { timestamps: true }
 );
 

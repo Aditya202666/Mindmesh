@@ -2,7 +2,12 @@ import mongoose from "mongoose";
 
 
 const noticeSchema = new mongoose.Schema({
-
+    
+    idToken: {
+        type: String,
+        required: true,
+    },
+    
     title: {
         type: String,
         required: true,
@@ -16,6 +21,7 @@ const noticeSchema = new mongoose.Schema({
         trim: true,
         maxLength: 1000,
     },
+
     
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,

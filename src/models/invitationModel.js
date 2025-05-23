@@ -2,22 +2,32 @@ import mongoose from "mongoose";
 
 const invitationSchema = new mongoose.Schema(
     {
-        token: {
+        workspaceIdToken: {
             type: String,
             required: true,
         },
 
-        workspaceToJoin: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Workspace",
+        invitationToken: {
+            type: String,
             required: true,
         },
 
-        userToBeJoined: {
+        sendBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
+
+        sendTo: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
+
+        accepted: {
+            type: Boolean,
+            default: false,
+        }, 
     },
     { timestamps: true }
 );

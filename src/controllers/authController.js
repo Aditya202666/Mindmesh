@@ -10,22 +10,11 @@ import userModel from "../models/userModel.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import {
-    deleteFromCloudinary,
-    uploadOnCloudinary,
-} from "../utils/cloudinary.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateOtpEmailTemplate, sendEmail } from "../utils/sendEmail.js";
 import { transformUser } from "../utils/transformData.js";
-
-const checkUsernameExists = async (newUsername, currentUsername = "") => {
-    if (newUsername.toLowerCase() === currentUsername) return false;
-
-    const existingUser = await userModel.findOne({ newUsername });
-
-    if (existingUser) return true;
-    return false;
-};
-
+import checkUsernameExists from "../utils/checkUsername.js";
+import personalTaskModel from "../models/personalTaskModel.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, fullname, email, password } = req.body;
@@ -104,7 +93,7 @@ const loginUser = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    console.log(user)
+    console.log(user);
 
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)
@@ -306,75 +295,36 @@ const changePassword = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, "Password changed successfully"));
 });
 
-const updateProfile = asyncHandler(async (req, res) => {
-    const { username, fullname, profession } = req.body;
+const deactivateAccount = asyncHandler(async (req, res) => {
     const user = req.user;
 
-    const isUsernameTaken = await checkUsernameExists(username, user.username);
+    // remove user from workspace
+    await workspaceModel.updateMany(
+        { members: user._id },
+        { $pull: { members: user._id } }
+    );
 
-    if (isUsernameTaken) {
-        throw new ApiError(400, "Username is already taken");
-    }
+    //remove user form projects
+    await projectModel.updateMany(
+        { members: user._id },
+        { $pull: { members: user._id } }
+    );
 
-    user.username = username;
-    user.fullname = fullname;
-    user.profession = profession;
+    //remove user personal Tasks
+    await personalTaskModel.deleteMany({ user: user._id });
+
+    // set  isDeleted to true and clear data
+    user.isDeleted = true;
+    user.refreshToken = "";
+    user.workspaces = [];
+    user.personaltasks = [];
     await user.save();
 
-    res.status(200).json(
-        new ApiResponse(
-            200,
-            "Profile updated successfully",
-            transformUser(user)
-        )
-    );
-});
-
-const updateProfilePic = asyncHandler(async (req, res) => {
-    const user = req.user;
-    const profilePicPath = req.file?.path;
-
-    if (!profilePicPath) {
-        throw new ApiError(400, "Profile pic is required");
-    }
-
-    const uploadResponse = await uploadOnCloudinary(profilePicPath);
-
-    if (!uploadResponse.url) {
-        throw new ApiError(500, "File upload failed");
-    }
-
-    if (user.profilePic.id) {
-        await deleteFromCloudinary(user.profilePic.id);
-    }
-
-    user.profilePic.url = uploadResponse.url;
-    user.profilePic.id = uploadResponse.public_id;
-    await user.save();
-    res.status(200).json(
-        new ApiResponse(
-            200,
-            "Profile pic updated successfully",
-            transformUser(user)
-        )
-    );
-});
-
-const deleteProfilePic = asyncHandler(async (req, res) => {
-    const user = req.user;
-    if (user.profilePic.id) {
-        await deleteFromCloudinary(user.profilePic.id);
-    }
-    user.profilePic.url = `https://avatar.iran.liara.run/username?username=${user.fullname}`;
-    user.profilePic.id = null;
-    await user.save();
-    res.status(200).json(
-        new ApiResponse(
-            200,
-            "Profile pic deleted successfully",
-            transformUser(user)
-        )
-    );
+    res.clearCookie(refreshTokenCookie, secureCookieOptions)
+        .clearCookie(MindCookie, secureCookieOptions)
+        .clearCookie(MeshCookie, unsecureCookieOptions)
+        .status(200)
+        .json(new ApiResponse(200, "Profile deleted successfully"));
 });
 
 export {
@@ -387,7 +337,5 @@ export {
     sendForgotPasswordOtp,
     verifyForgotPasswordOtp,
     changePassword,
-    updateProfile,
-    updateProfilePic,
-    deleteProfilePic,
+    deactivateAccount,
 };
