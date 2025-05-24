@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const invitationSchema = new mongoose.Schema(
     {
-        workspaceIdToken: {
-            type: String,
+        workspace: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Workspace",
             required: true,
         },
 
@@ -12,21 +13,22 @@ const invitationSchema = new mongoose.Schema(
             required: true,
         },
 
-        sendBy: {
+        sender: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
 
-        sendTo: {
+        receiver: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
         },
 
-        accepted: {
-            type: Boolean,
-            default: false,
+        status: {
+            type: String,
+            enum: ["Pending", "Accepted", "Declined"],
+            default: "Pending",
         }, 
     },
     { timestamps: true }
