@@ -9,6 +9,7 @@ import {
 } from "../utils/cloudinary.js";
 import { transformUser } from "../utils/transformData.js";
 import invitationModel from "../models/invitationModel.js";
+import personalTaskModel from "../models/personalTaskModel.js";
 
 const updateProfile = asyncHandler(async (req, res) => {
     const { username, fullname, profession } = req.body;
@@ -79,6 +80,45 @@ const deleteProfilePic = asyncHandler(async (req, res) => {
             transformUser(user)
         )
     );
+});
+
+const getPersonalTasks = asyncHandler(async (req, res) => {
+    const id = req.user._id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const personalTasks = await personalTaskModel.aggregate([
+        {
+            $match: { user: id, isDeleted: false },
+        },
+        {
+            $addFields: {
+                totalSubTasks: { $size: "$subTasks" },
+                completedSubTasks: {
+                    $size: {
+                        $filter: {
+                            input: "$subTasks",
+                            as: "subTask",
+                            cond: { $eq: ["$$subtask.isCompleted", true] },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            $sort: { createdAt: -1 },
+        },
+        {
+            $skip: skip,
+        },
+        {
+            $limit: limit,
+        },
+    ]);
+
+    res.status(200).json(new ApiResponse(200, "personalTasks found.", {personalTasks: personalTasks[0]}))
+    
 });
 
 const getUserInvitations = asyncHandler(async (req, res) => {
@@ -185,6 +225,7 @@ export {
     updateProfile,
     updateProfilePic,
     deleteProfilePic,
+    getPersonalTasks,
     getUserInvitations,
     acceptInvitation,
     declineInvitation,

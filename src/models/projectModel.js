@@ -2,13 +2,6 @@ import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema(
     {
-       idToken: {
-            type: String,
-            unique: true,
-            required: true,
-        },
-        
-
         name: {
             type: String,
             required: true,
@@ -22,7 +15,6 @@ const projectSchema = new mongoose.Schema(
             trim: true,
             maxLength: 500,
         },
-
 
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
@@ -51,8 +43,8 @@ const projectSchema = new mongoose.Schema(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "ProjectTask",
-            }
-        ]
+            },
+        ],
     },
     { timestamps: true }
 );

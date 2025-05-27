@@ -38,10 +38,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // routes
 import authRoute from "./routes/authRoute.js";
+import userRoute from "./routes/userRoute.js";
 import workspaceRoute from "./routes/workspaceRoute.js";
 
 
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/user", userRoute);
 app.use("/api/v1/workspace", workspaceRoute);
 
 // error Handler MiddleWare

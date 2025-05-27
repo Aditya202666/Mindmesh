@@ -6,8 +6,6 @@ import checkAuthority from "../middlewares/checkAuthority.js";
 
 const router = Router();
 
-router.use(verifyToken)
+router.use(verifyToken);
 
-
-
-export default router
+export default router;

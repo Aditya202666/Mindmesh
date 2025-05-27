@@ -18,8 +18,8 @@ export const unsecureCookieOptions = {
     sameSite: 'none',
   }
 
-export const workspacePrefix = 'workspace'
-export const projectPrefix = 'project'
+export const workspacePrefix = 'ws_'
+export const projectPrefix = 'pr_'
 
 export const OwnerAccessLevel = 4
 export const AdminAccessLevel = 3

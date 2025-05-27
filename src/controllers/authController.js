@@ -75,7 +75,8 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
-    const user = await userModel.findOne({ $or: [{ email }, { username }] });
+    const user = await userModel.findOne({ $or: [{ email }, { username }] }).populate("workspaces", "name");
+    
 
     if (!user) {
         throw new ApiError(404, "User not found");
@@ -130,7 +131,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     const decodedToken = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 
-    const user = await userModel.findById(decodedToken.id);
+    const user = await userModel.findById(decodedToken.id).populate("workspaces", "name");
 
     if (!user) {
         throw new ApiError(401, "Please login.");

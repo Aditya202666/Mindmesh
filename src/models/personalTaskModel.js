@@ -31,7 +31,7 @@ const personalTaskSchema = new mongoose.Schema(
             maxLength: 50,
         },
 
-        desc: {
+        description: {
             type: String,
             required: true,
             trim: true,

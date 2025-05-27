@@ -2,12 +2,6 @@ import mongoose from "mongoose";
 
 const workspaceSchema = new mongoose.Schema(
     {
-        idToken: {
-            type: String,
-            unique: true,
-            required: true,
-        },
-
         name: {
             type: String,
             required: true,
@@ -29,7 +23,12 @@ const workspaceSchema = new mongoose.Schema(
             },
         ],
 
-        members: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        members: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
 
         projects: [
             {

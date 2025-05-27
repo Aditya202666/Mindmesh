@@ -47,16 +47,9 @@ const userSchema = new mongoose.Schema(
 
         workspaces: [
             {
-                id: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: "Workspace",
-                    required: true,
-                },
-                name: {
-                    type: String,
-                    required: true,
-                },
-            },
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Workspace"
+            }
         ],
 
         invitations: [

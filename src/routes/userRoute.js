@@ -15,6 +15,7 @@ import { upload } from "../middlewares/multer.js";
 const router = Router();
 
 router.use(verifyToken);
+
 router
     .route("/profile")
     .patch(updateProfileValidator, inputErrorHandler, updateProfile);
@@ -22,6 +23,8 @@ router
 router.route("/profilePic").patch(upload.single("avatar"), updateProfilePic);
 
 router.route("/profilePic").delete(deleteProfilePic);
+
+router.route("/personal-tasks").get(getPersonalTasks);              
 
 router.route("/invitations").get(getUserInvitations);
 
