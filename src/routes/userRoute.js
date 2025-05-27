@@ -6,6 +6,7 @@ import {
     acceptInvitation,
     declineInvitation,
     deleteProfilePic,
+    getPersonalTasks,
     getUserInvitations,
     updateProfile,
     updateProfilePic,
