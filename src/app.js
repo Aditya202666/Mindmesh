@@ -40,11 +40,13 @@ app.use(express.urlencoded({ extended: true }));
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import workspaceRoute from "./routes/workspaceRoute.js";
+import personalTaskRoute from './routes/personalTaskRoute.js'
 
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/workspace", workspaceRoute);
+app.use("/api/v1/personalTask", personalTaskRoute);
 
 // error Handler MiddleWare
 app.use(errorHandler);

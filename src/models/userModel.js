@@ -38,12 +38,12 @@ const userSchema = new mongoose.Schema(
             url: String,
         },
 
-        personalTasks: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "PersonalTask",
-            },
-        ],
+        // personalTasks: [
+        //     {
+        //         type: mongoose.Schema.Types.ObjectId,
+        //         ref: "PersonalTask",
+        //     },
+        // ],
 
         workspaces: [
             {

@@ -8,4 +8,29 @@ const router = Router();
 
 router.use(verifyToken);
 
+/* 
+workspace--> all these can only be done by owner/admin of the workspace
+create  
+
+update
+delete
+
+get details
+assign admin
+
+get members
+remove members
+send invitation
+
+project-->  
+create 
+update
+delete
+add members
+remove members
+
+assign manager
+
+ */
+
 export default router;

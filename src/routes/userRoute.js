@@ -6,7 +6,6 @@ import {
     acceptInvitation,
     declineInvitation,
     deleteProfilePic,
-    getPersonalTasks,
     getUserInvitations,
     updateProfile,
     updateProfilePic,
@@ -24,8 +23,6 @@ router
 router.route("/profilePic").patch(upload.single("avatar"), updateProfilePic);
 
 router.route("/profilePic").delete(deleteProfilePic);
-
-router.route("/personal-tasks").get(getPersonalTasks);              
 
 router.route("/invitations").get(getUserInvitations);
 

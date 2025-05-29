@@ -9,6 +9,7 @@ const subTaskSchema = new mongoose.Schema({
     },
     dueDate: {
         type: Date,
+        default: null
     },
     isCompleted: {
         type: Boolean,
@@ -22,6 +23,7 @@ const personalTaskSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            index: true
         },
         
         title: {
@@ -40,6 +42,7 @@ const personalTaskSchema = new mongoose.Schema(
 
         dueDate: {
             type: Date,
+            default: null
         },
 
         subTasks: [subTaskSchema],
