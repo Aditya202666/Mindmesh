@@ -31,7 +31,7 @@ const projectTaskSchema = new mongoose.Schema(
             maxLength: 50,
         },
 
-        desc: {
+        description: {
             type: String,
             required: true,
             trim: true,
@@ -59,7 +59,7 @@ const projectTaskSchema = new mongoose.Schema(
         assignedTo: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "IdCard",
+                ref: "User",
             },
         ],
 
@@ -70,7 +70,7 @@ const projectTaskSchema = new mongoose.Schema(
 
         assignedBy: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "IdCard",
+            ref: "User",
         },
 
         activityLog: [

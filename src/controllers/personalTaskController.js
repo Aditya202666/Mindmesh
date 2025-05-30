@@ -45,12 +45,20 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
 });
 
 const createTask = asyncHandler(async (req, res) => {
-    const { title, description, status, priority, dueDate = null } = req.body;
+    const {
+        title,
+        description,
+        status,
+        priority,
+        isCompleted = false,
+        dueDate = null,
+    } = req.body;
     const userId = req.user._id;
     const personalTask = await personalTaskModel.create({
         user: userId,
         title,
         description,
+        isCompleted,
         status,
         priority,
         dueDate,
@@ -111,13 +119,28 @@ const removeSubTask = asyncHandler(async (req, res) => {
 const editPersonalTask = asyncHandler(async (req, res) => {
     const { id: taskId } = req.params;
     const userId = req.user._id;
-    const { title, description, dueDate, subTasks, status, priority } =
-        req.body;
+    const {
+        title,
+        description,
+        dueDate,
+        subTasks,
+        status,
+        priority,
+        isCompleted,
+    } = req.body;
 
     const personalTask = await personalTaskModel.findOneAndUpdate(
         { _id: taskId, isDeleted: false, user: userId },
         {
-            $set: { title, description, dueDate, subTasks, status, priority },
+            $set: {
+                title,
+                description,
+                dueDate,
+                subTasks,
+                status,
+                priority,
+                isCompleted,
+            },
         },
         {
             new: true,
@@ -219,6 +242,10 @@ const getPersonalTask = asyncHandler(async (req, res) => {
         res.status(404).json(new ApiResponse(404, "Task not found."));
     }
 
+    personalTask.subTasks.sort(
+        (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
+    );
+
     res.status(200).json(new ApiResponse(200, "Task Found.", personalTask));
 });
 
@@ -267,35 +294,43 @@ const restoreDeletedTask = asyncHandler(async (req, res) => {
 
     const result = await personalTaskModel.findOneAndUpdate(
         { _id: taskId, user: userId },
-        {$set: {isDeleted:false}}
+        { $set: { isDeleted: false } }
     );
 
-    res.status(200).json(new ApiResponse(200, "Task restored.", result))
+    res.status(200).json(new ApiResponse(200, "Task restored.", result));
 });
 
-const deleteAllTasksPermanently = asyncHandler(async(req,res)=>{
-    const userId = req.user._id
+const deleteAllTasksPermanently = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
 
-    const result = await personalTaskModel.deleteMany({user:userId, isDeleted:true})
+    const result = await personalTaskModel.deleteMany({
+        user: userId,
+        isDeleted: true,
+    });
 
-    res.status(200).json(new ApiResponse(200, "Tasks deleted permanently.", result))
+    res.status(200).json(
+        new ApiResponse(200, "Tasks deleted permanently.", result)
+    );
+});
 
-})
+const deleteTaskPermanently = asyncHandler(async (req, res) => {
+    const { id: taskId } = require.params;
+    const userId = req.user._id;
 
-const deleteTaskPermanently = asyncHandler(async(req,res)=>{
-    const {id:taskId} = require.params
-    const userId = req.user._id
+    const result = await personalTaskModel.findOneAndDelete({
+        _id: taskId,
+        user: userId,
+        isDeleted: true,
+    });
 
-    const result = await personalTaskModel.findOneAndDelete({_id:taskId, user:userId, isDeleted:true})
-
-    if(!result){
-        res.status(404).json(new ApiResponse(404, "Task not found."))
+    if (!result) {
+        res.status(404).json(new ApiResponse(404, "Task not found."));
     }
-    
-    res.status(200).json(new ApiResponse(200, "Task deleted permanently.", result))
 
-})
-
+    res.status(200).json(
+        new ApiResponse(200, "Task deleted permanently.", result)
+    );
+});
 
 export {
     getAllPersonalTasks,
@@ -311,5 +346,5 @@ export {
     restoreAllDeletedTasks,
     restoreDeletedTask,
     deleteAllTasksPermanently,
-    deleteTaskPermanently
+    deleteTaskPermanently,
 };

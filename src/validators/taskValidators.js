@@ -1,0 +1,101 @@
+import { body } from "express-validator";
+import { ApiError } from "../utils/ApiError";
+
+const allowedStatus = ["To-do", "In-Progress", "Completed", "Overdue"];
+const allowedPriority = ["High", "Medium", "Low", "None"];
+
+const taskValidator = [
+    body("title")
+        .trim()
+        .notEmpty()
+        .withMessage("Title is required.")
+        .isLength({ max: 50 })
+        .withMessage("Title can't be more than 50 characters.")
+        .escape(),
+
+    body("description")
+        .trim()
+        .notEmpty()
+        .withMessage("Description is required.")
+        .isLength({ max: 50 })
+        .withMessage("Description can't be more than 200 characters.")
+        .escape(),
+
+    body("status")
+        .exists()
+        .trim()
+        .notEmpty()
+        .withMessage("Status is required.")
+        .isIn(allowedStatus)
+        .withMessage("Invalid Status."),
+
+    body("priority")
+        .exists()
+        .trim()
+        .notEmpty()
+        .withMessage("Priority is required.")
+        .isIn(allowedPriority)
+        .withMessage("Invalid Status."),
+
+    body("dueDate")
+        .optional({ checkFalsy: true })
+        .isISO8601()
+        .withMessage("Due date must be a valid ISO 8601 date")
+        .isIn(allowedPriority)
+        .custom((value) => {
+            const inputDate = new Date(value);
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            if (inputDate < today) {
+                new ApiError(400, "Due date can't be in the past.");
+            }
+
+            return true;
+        }),
+
+    body("isCompleted")
+        .exists()
+        .withMessage("isCompleted is required")
+        .isBoolean()
+        .withMessage("isComplete Must be a Boolean")
+        .toBoolean(),
+];
+
+const subTaskValidator = [
+    body("title")
+        .trim()
+        .notEmpty()
+        .withMessage("Title is required.")
+        .isLength({ max: 50 })
+        .withMessage("Title can't be more than 50 characters.")
+        .escape(),
+
+    body("isCompleted")
+        .exists()
+        .withMessage("isCompleted is required")
+        .isBoolean()
+        .withMessage("isComplete Must be a Boolean")
+        .toBoolean(),
+
+    body("dueDate")
+        .optional({ checkFalsy: true })
+        .isISO8601()
+        .withMessage("Due date must be a valid ISO 8601 date")
+        .isIn(allowedPriority)
+        .custom((value) => {
+            const inputDate = new Date(value);
+            const today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            if (inputDate < today) {
+                new ApiError(400, "Due date can't be in the past.");
+            }
+
+            return true;
+        }),
+];
+
+export { taskValidator, subTaskValidator };
