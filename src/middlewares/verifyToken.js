@@ -4,7 +4,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import userModel from "../models/userModel.js";
 
 const verifyToken = asyncHandler(async (req, res, next) => {
-
     const refreshToken = req.cookies?.RefreshToken;
     const MindToken = req.cookies?.Mind;
     const MeshToken = req.headers["mesh"];
@@ -25,14 +24,13 @@ const verifyToken = asyncHandler(async (req, res, next) => {
         throw new ApiError(401, "Unauthorized, Please login.");
     }
 
-    if (!user.isVerified) {
-        throw new ApiError(401, "Unauthorized, Please verify your account.");
-    }
-
-    if(user.isDeleted){
+    if (user.isDeleted) {
         throw new ApiError(404, "User not found.");
     }
 
+    if (!user.isVerified) {
+        throw new ApiError(401, "Unauthorized, Please verify your account.");
+    }
 
     req.user = user;
 

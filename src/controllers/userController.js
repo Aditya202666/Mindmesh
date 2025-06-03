@@ -11,6 +11,20 @@ import { transformUser } from "../utils/transformData.js";
 import invitationModel from "../models/invitationModel.js";
 import personalTaskModel from "../models/personalTaskModel.js";
 
+
+const checkUsername = asyncHandler(async(req,res)=>{
+    const {username} = req.body
+
+    const isUsernameTaken = checkUsernameExists(username)
+
+    if (isUsernameTaken) {
+        throw new ApiError(400, "Username is unavailable.");
+    }
+
+    res.status(200).json(new ApiResponse(200, "Username is available."))
+
+})
+
 const updateProfile = asyncHandler(async (req, res) => {
     const { username, fullname, profession } = req.body;
     const user = req.user;
@@ -187,6 +201,7 @@ const declineInvitation = asyncHandler(async (req, res) => {
 });
 
 export {
+    checkUsername, 
     updateProfile,
     updateProfilePic,
     deleteProfilePic,

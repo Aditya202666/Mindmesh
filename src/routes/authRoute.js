@@ -30,6 +30,8 @@ router
         registerUser
     );
 
+
+
 router.route("/login").post(loginValidator, inputErrorHandler, loginUser);
 
 router.route("/logout").post(verifyToken, logoutUser);

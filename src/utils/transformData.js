@@ -7,7 +7,7 @@ const transformUser = (user) => {
         fullname: user.fullname,
         email: user.email,
         profession: user.profession,
-        profilePic: user.profilePic,
+        profilePic: user.profilePic.url,
         isVerified: user.isVerified,
         workspaces: user.workspaces,
     };

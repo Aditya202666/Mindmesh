@@ -1,9 +1,13 @@
 import { Router } from "express";
 import verifyToken from "../middlewares/verifyToken.js";
-import { updateProfileValidator } from "../validators/userValidator.js";
+import {
+    updateProfileValidator,
+    usernameValidator,
+} from "../validators/userValidator.js";
 import inputErrorHandler from "../middlewares/inputErrorHandler.js";
 import {
     acceptInvitation,
+    checkUsername,
     declineInvitation,
     deleteProfilePic,
     getUserInvitations,
@@ -13,6 +17,10 @@ import {
 import { upload } from "../middlewares/multer.js";
 
 const router = Router();
+
+router
+    .route("/username")
+    .post(usernameValidator, inputErrorHandler, checkUsername);
 
 router.use(verifyToken);
 

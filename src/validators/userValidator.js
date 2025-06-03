@@ -90,7 +90,20 @@ const updateProfileValidator = [
         .withMessage("Profession can't be more than 30 characters."),
 ]
 
+const usernameValidator = [
+        body("username")
+        .trim()
+        .notEmpty()
+        .withMessage("Username is required.")
+        .isLength({ min: 3 })
+        .withMessage("Username must be at least 3 characters.")
+        .isLength({ max: 20 })
+        .withMessage("Username can't be more than 20 characters.")
+        .isAlphanumeric()
+        .withMessage("Username must be alphanumeric."),
 
-export { loginValidator, registerValidator, updateProfileValidator };
+]
+
+export { loginValidator, registerValidator, updateProfileValidator, usernameValidator };
 
 

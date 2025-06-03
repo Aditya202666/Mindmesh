@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { ApiError } from "../utils/ApiError";
+import { ApiError } from "../utils/ApiError.js";
 
 const allowedStatus = ["To-do", "In-Progress", "Completed", "Overdue"];
 const allowedPriority = ["High", "Medium", "Low", "None"];
