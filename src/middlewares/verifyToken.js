@@ -7,7 +7,8 @@ const verifyToken = asyncHandler(async (req, res, next) => {
     const refreshToken = req.cookies?.RefreshToken;
     const MindToken = req.cookies?.Mind;
     const MeshToken = req.headers["mesh"];
-
+    console.log(MindToken, MeshToken, refreshToken)
+    console.log('headers', req.headers) 
     if (MindToken !== MeshToken) {
         throw new ApiError(401, "Unauthorized, Please login.");
     }
@@ -26,10 +27,6 @@ const verifyToken = asyncHandler(async (req, res, next) => {
 
     if (user.isDeleted) {
         throw new ApiError(404, "User not found.");
-    }
-
-    if (!user.isVerified) {
-        throw new ApiError(401, "Unauthorized, Please verify your account.");
     }
 
     req.user = user;

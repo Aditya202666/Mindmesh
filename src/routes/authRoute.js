@@ -38,15 +38,15 @@ router.route("/logout").post(verifyToken, logoutUser);
 
 router.route("/refresh-token").post(refreshToken);
 
-router.route("/account/otp").post(verifyToken, sendAccountVerificationOtp);
+router.route("/account-otp").get(verifyToken, sendAccountVerificationOtp);
 
-router
-    .route("/verify/account/otp")
+router 
+    .route("/verify-account-otp")
     .post(verifyToken, verifyAccountVerificationOtp);
 
-router.route("password/otp").post(sendForgotPasswordOtp);
+router.route("/password-otp").post(sendForgotPasswordOtp);
 
-router.route("/verify/password/otp").post(verifyToken, verifyForgotPasswordOtp);
+router.route("/verify-password-otp").post(verifyForgotPasswordOtp);
 
 router.route("/password").patch(verifyToken, changePassword);
 

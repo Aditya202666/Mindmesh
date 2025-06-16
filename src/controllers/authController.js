@@ -19,7 +19,6 @@ import personalTaskModel from "../models/personalTaskModel.js";
 const registerUser = asyncHandler(async (req, res) => {
     const { username, fullname, email, password } = req.body;
     const avatarPath = req.file?.path;
-
     let profilePic = {
         url: `https://avatar.iran.liara.run/username?username=${fullname}`,
         id: "",
@@ -33,10 +32,10 @@ const registerUser = asyncHandler(async (req, res) => {
     const usernameExists = await checkUsernameExists(username);
     if (usernameExists) {
         throw new ApiError(400, "Username already exists");
-    }
+    } 
 
     if (avatarPath) {
-        const uploadResponse = await uploadOnCloudinary(avatar);
+        const uploadResponse = await uploadOnCloudinary(avatarPath);
         profilePic.url = uploadResponse.url;
         profilePic.id = uploadResponse.public_id;
     }
@@ -94,7 +93,7 @@ const loginUser = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    console.log(user);
+    // console.log(user);
 
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)
@@ -107,7 +106,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 transformUser(user)
             )
         );
-});
+});    
 
 const logoutUser = asyncHandler(async (req, res) => {
     const user = req.user;
@@ -147,7 +146,7 @@ const refreshToken = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    console.log(user);
+    // console.log(user);
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)
         .cookie(MeshCookie, accessToken, unsecureCookieOptions)
@@ -189,7 +188,7 @@ const sendAccountVerificationOtp = asyncHandler(async (req, res) => {
 });
 
 const verifyAccountVerificationOtp = asyncHandler(async (req, res) => {
-    console.log("verifyAccountVerificationOtp");
+    // console.log("verifyAccountVerificationOtp");
     const user = req.user;
     const { otp } = req.body;
 
@@ -211,7 +210,7 @@ const verifyAccountVerificationOtp = asyncHandler(async (req, res) => {
     user.otpSentTime = 0;
     await user.save();
 
-    res.status(200).json(new ApiResponse(200, "User verified successfully"));
+    res.status(200).json(new ApiResponse(200, "User verified successfully", transformUser(user)));
 });
 
 const sendForgotPasswordOtp = asyncHandler(async (req, res) => {
@@ -266,7 +265,7 @@ const verifyForgotPasswordOtp = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    console.log(user);
+    // console.log(user);
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)
         .cookie(MeshCookie, accessToken, unsecureCookieOptions)
