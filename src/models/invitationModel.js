@@ -11,6 +11,8 @@ const invitationSchema = new mongoose.Schema(
         invitationToken: {
             type: String,
             required: true,
+            unique: true,
+            trim: true,
         },
 
         sender: {

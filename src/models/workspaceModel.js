@@ -2,6 +2,15 @@ import mongoose from "mongoose";
 
 const workspaceSchema = new mongoose.Schema(
     {
+        // Unique identifier for the workspace
+        idToken: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+            maxLength: 50,
+        },
+
         name: {
             type: String,
             required: true,
@@ -16,26 +25,39 @@ const workspaceSchema = new mongoose.Schema(
             maxLength: 500,
         },
 
-        invitations: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Invitation",
-            },
-        ],
+        createdBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        },
 
-        members: [
+        admin: [
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
             },
         ],
 
-        projects: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Project",
-            },
-        ],
+        // invitations: [
+        //     {
+        //         type: mongoose.Schema.Types.ObjectId,
+        //         ref: "Invitation",
+        //     },
+        // ],
+
+        // members: [
+        //     {
+        //         type: mongoose.Schema.Types.ObjectId,
+        //         ref: "User",
+        //     },
+        // ],
+
+        // projects: [
+        //     {
+        //         type: mongoose.Schema.Types.ObjectId,
+        //         ref: "Project",
+        //     },
+        // ],
     },
     { timestamps: true }
 );

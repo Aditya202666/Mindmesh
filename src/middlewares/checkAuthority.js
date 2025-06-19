@@ -3,16 +3,17 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const checkAuthority = asyncHandler(async (req, res, next) => {
 
-    const { workspaceId } = req.params;
+    const idTokenRef = req.params.idToken;
     const user = req.user;
 
-    if(!user.workspaces.find((workspace) => workspace.id.equals(workspaceId))){
-        throw new ApiError(403, "You are not authorized to access this workspace");
+    const membership = await workspaceModel.findOne({idTokenRef, user: user._id});
+            
+    if (!membership) {
+        throw new ApiError(403, "Unauthorized to access this workspace.");
     }
 
-    const workspace = await workspaceModel.findById(workspaceId);
-    
-
+    req.membership = membership;
+    next();
     
 });
 

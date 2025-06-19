@@ -9,6 +9,12 @@ const activityLogSchema = new mongoose.Schema({
     
     },
 
+    taskId:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: "ProjectTask",
+        required: true,
+    },
+
     content:{
         type: String,
         required: true,

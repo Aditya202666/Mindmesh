@@ -38,18 +38,21 @@ router.route("/logout").post(verifyToken, logoutUser);
 
 router.route("/refresh-token").post(refreshToken);
 
-router.route("/account-otp").get(verifyToken, sendAccountVerificationOtp);
+router.route("/account-otp").get(sendAccountVerificationOtp);
 
 router 
     .route("/verify-account-otp")
-    .post(verifyToken, verifyAccountVerificationOtp);
+    .post(verifyAccountVerificationOtp);
 
 router.route("/password-otp").post(sendForgotPasswordOtp);
 
+
 router.route("/verify-password-otp").post(verifyForgotPasswordOtp);
 
+//todo
 router.route("/password").patch(verifyToken, changePassword);
 
+//todo
 router.route("/profile").delete(verifyToken, deactivateAccount);
 
 export default router;
