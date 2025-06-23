@@ -7,10 +7,18 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
+    const fromDate = new Date(req.query.fromDate);
+    // console.log(fromDate)
 
     const personalTasks = await personalTaskModel.aggregate([
         {
-            $match: { user: id, isDeleted: false },
+            $match: {
+                user: id,
+                isDeleted: false,
+                createdAt: {
+                    $gte: fromDate,
+                },
+            },
         },
         {
             $addFields: {
@@ -20,7 +28,7 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
                         $filter: {
                             input: "$subTasks",
                             as: "subTask",
-                            cond: { $eq: ["$$subtask.isCompleted", true] },
+                            cond: { $eq: ["$$subTask.isCompleted", true] },
                         },
                     },
                 },
@@ -39,18 +47,19 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
 
     res.status(200).json(
         new ApiResponse(200, "personalTasks found.", {
-            personalTasks: personalTasks[0],
+            personalTasks: personalTasks,
         })
     );
 });
 
 const createTask = asyncHandler(async (req, res) => {
+    console.log("Creating a new personal task", req.body);
     const {
         title,
         description,
         status,
         priority,
-        isCompleted = false,
+        isCompleted = status === "Completed",
         dueDate = null,
     } = req.body;
     const userId = req.user._id;
@@ -72,13 +81,13 @@ const createTask = asyncHandler(async (req, res) => {
 const createSubTask = asyncHandler(async (req, res) => {
     const { id: taskId } = req.params;
     const userId = req.user._id;
-    const { title, dueDate = null, isCompleted = false } = req.body;
+    const { title, isCompleted = false } = req.body;
 
     const personalTask = await personalTaskModel.findOneAndUpdate(
         { id: taskId, user: userId, isCompleted: false, isDeleted: false },
         {
             $push: {
-                subTasks: { title, dueDate, isCompleted },
+                subTasks: { title, isCompleted },
             },
         },
         { new: true }
@@ -241,10 +250,6 @@ const getPersonalTask = asyncHandler(async (req, res) => {
     if (!personalTask) {
         res.status(404).json(new ApiResponse(404, "Task not found."));
     }
-
-    personalTask.subTasks.sort(
-        (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
-    );
 
     res.status(200).json(new ApiResponse(200, "Task Found.", personalTask));
 });

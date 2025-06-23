@@ -7,10 +7,6 @@ const subTaskSchema = new mongoose.Schema({
         trim: true,
         maxLength: 50,
     },
-    dueDate: {
-        type: Date,
-        default: null
-    },
     isCompleted: {
         type: Boolean,
         default: false,

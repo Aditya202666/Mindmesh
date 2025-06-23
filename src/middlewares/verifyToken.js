@@ -5,17 +5,34 @@ import userModel from "../models/userModel.js";
 
 const verifyToken = asyncHandler(async (req, res, next) => {
     const refreshToken = req.cookies?.RefreshToken;
-    const MindToken = req.cookies?.Mind;
-    const MeshToken = req.headers["mesh"];
-    console.log(MindToken, MeshToken, refreshToken);
-    console.log("headers", req.headers);
-    if (MindToken !== MeshToken) {
+    let MindToken = req.cookies?.Mind;
+    let MeshToken = req.headers["mesh"];
+    // console.log(MindToken, MeshToken, refreshToken);
+    // console.log("headers", req.headers);
+
+    // console.log("Parsed Cookies:", req.cookies);
+    // console.log("Mind:", req.cookies?.Mind);
+    // console.log("Mesh:", req.cookies?.Mesh);
+    // console.log("RefreshToken:", req.cookies?.RefreshToken);
+
+    if (!refreshToken || !MindToken || !MeshToken) {
         throw new ApiError(401, "Unauthorized, Please login.");
     }
 
-    const decodedToken = jwt.verify(MindToken, process.env.ACCESS_TOKEN_SECRET);
+    const decodedMindToken = jwt.verify(
+        MindToken,
+        process.env.ACCESS_TOKEN_SECRET
+    );
+    const decodedMeshToken = jwt.verify(
+        MeshToken,
+        process.env.ACCESS_TOKEN_SECRET
+    );
 
-    const user = await userModel.findById(decodedToken.id);
+    if (decodedMeshToken.id !== decodedMindToken.id) {
+        throw new ApiError(401, "Unauthorized, Please login.");
+    }
+
+    const user = await userModel.findById(decodedMindToken.id);
 
     if (!user) {
         throw new ApiError(401, "Unauthorized, Please login.");
@@ -34,7 +51,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
     }
 
     req.user = user;
-
+    // console.log("User verified", user._id);
     next();
 });
 

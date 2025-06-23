@@ -17,7 +17,7 @@ const taskValidator = [
         .trim()
         .notEmpty()
         .withMessage("Description is required.")
-        .isLength({ max: 50 })
+        .isLength({ max: 200 })
         .withMessage("Description can't be more than 200 characters.")
         .escape(),
 
@@ -35,13 +35,12 @@ const taskValidator = [
         .notEmpty()
         .withMessage("Priority is required.")
         .isIn(allowedPriority)
-        .withMessage("Invalid Status."),
+        .withMessage("Invalid priority."),
 
     body("dueDate")
         .optional({ checkFalsy: true })
         .isISO8601()
         .withMessage("Due date must be a valid ISO 8601 date")
-        .isIn(allowedPriority)
         .custom((value) => {
             const inputDate = new Date(value);
             const today = new Date();
@@ -55,12 +54,12 @@ const taskValidator = [
             return true;
         }),
 
-    body("isCompleted")
-        .exists()
-        .withMessage("isCompleted is required")
-        .isBoolean()
-        .withMessage("isComplete Must be a Boolean")
-        .toBoolean(),
+    // body("isCompleted")  
+    //     .exists()
+    //     .withMessage("isCompleted is required")
+    //     .isBoolean()
+    //     .withMessage("isComplete Must be a Boolean")
+    //     .toBoolean(),
 ];
 
 const subTaskValidator = [
