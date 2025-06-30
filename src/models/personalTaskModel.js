@@ -53,6 +53,12 @@ const personalTaskSchema = new mongoose.Schema(
             default: false,
         },
 
+        color:{
+            type: String,
+            enum: ["Yellow", "Blue", "Orange", "Grey", "Lavender" ],
+            default: "Yellow",
+        },
+
         status:{
             type: String,
             enum:["To-do","In-Progress","Completed", "Overdue"],

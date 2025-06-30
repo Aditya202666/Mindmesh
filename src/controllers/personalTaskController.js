@@ -2,23 +2,170 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import personalTaskModel from "../models/personalTaskModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+const getOverview = asyncHandler(async (req, res) => {
+    const id = req.user._id;
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    const nextSevenDays = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 7
+    );
+    const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    //-- dueDate in  next seven days
+    //-- overdue from last month
+    //-- recent tasks
+    //
+    const overview = await personalTaskModel.aggregate([
+        {
+            $facet: {
+                dueInSevenDays: [
+                    {
+                        $match: {
+                            user: id,
+                            isDeleted: false,
+                            dueDate: { $gte: today, $lt: nextSevenDays },
+                        },
+                    },
+                    {
+                        $sort: { dueDate: 1 },
+                    },
+                    {
+                        $limit: 5,
+                    },
+                ],
+                overdueLastMonth: [
+                    {
+                        $match: {
+                            user: id,
+                            isDeleted: false,
+                            dueDate: { $gte: firstOfLastMonth, $lt: today },
+                        },
+                    },
+                    {
+                        $sort: { dueDate: 1 },
+                    },
+                    {
+                        $limit: 5,
+                    },
+                ],
+                recentTask: [
+                    {
+                        $match: {
+                            user: id,
+                            isDeleted: false,
+                            createdAt: { $gte: firstOfThisMonth }, 
+                        },
+                    },
+                    {
+                        $sort: { createdAt: -1 },
+                    },
+                    {
+                        $limit: 5,
+                    },
+                ],
+                taskDetails: [
+                    {
+                        $match: {
+                            user: id,
+                            isDeleted: false,
+                            dueDate: { $gte: firstOfThisMonth },
+                        },
+                    },
+                    {
+                        $addFields: {
+                            allTasks: 1,
+                            completedTasks: {
+                                $cond: [
+                                    { $eq: ["$status", "Completed"] },
+                                    1,
+                                    0,
+                                ],
+                            },
+                            pendingTasks: {
+                                $cond: [
+                                    { $and:[
+                                        {  $gte: ["$dueDate", today] },
+                                        {  $lt: ["$dueDate", firstOfNextMonth] },
+                                    ] },
+                                    1,
+                                    0, 
+                                ],
+                            },
+                            overdueTasks: {
+                                $cond:[
+                                    { $and:[
+                                        { $gte: [ "$dueDate", firstOfThisMonth] },
+                                        { $lt: [ "$dueDate", today] }
+                                    ]  },
+                                    1,
+                                    0
+                                ]
+                            },
+                        },
+                    },
+                    {
+                        $group:{
+                            _id: null,
+                            allTasks: { $sum: "$allTasks" },
+                            completedTasks: { $sum: "$completedTasks" },
+                            pendingTasks: { $sum: "$pendingTasks" },
+                            overdueTasks: { $sum: "$overdueTasks" },
+
+                        }
+                    }
+                ],
+            },
+        },
+        {
+            $project:{
+                dueInSevenDays: 1,
+                overdueLastMonth: 1,
+                recentTask: 1,
+                taskDetails: { $first: "$taskDetails" },
+            }
+        }
+    ]);
+    
+    res.status(200).json(
+        new ApiResponse(200, "Overview fetched successfully", overview[0])
+    );
+});
+
 const getAllPersonalTasks = asyncHandler(async (req, res) => {
     const id = req.user._id;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const skip = (page - 1) * limit;
-    const fromDate = new Date(req.query.fromDate);
+    const status = req.query.status;
+    const priority = req.query.priority;
+    const orderBy = req.query.ascending ? 1 : -1;
+    let fromDate = req.query.fromDate;
     // console.log(fromDate)
 
+    const matchStage = {
+        user: id,
+        isDeleted: false,
+    };
+    if (fromDate !== "All") {
+        fromDate = new Date(fromDate);
+        matchStage.createdAt = { $gte: fromDate };
+    }
+    if (status !== "All") {
+        matchStage.status = status;
+    }
+    if (priority !== "All") {
+        matchStage.priority = priority;
+    }
+    // console.log(matchStage)
     const personalTasks = await personalTaskModel.aggregate([
         {
-            $match: {
-                user: id,
-                isDeleted: false,
-                createdAt: {
-                    $gte: fromDate,
-                },
-            },
+            $match: matchStage,
         },
         {
             $addFields: {
@@ -35,7 +182,7 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
             },
         },
         {
-            $sort: { createdAt: -1 },
+            $sort: { createdAt: orderBy },
         },
         {
             $skip: skip,
@@ -58,6 +205,7 @@ const createTask = asyncHandler(async (req, res) => {
         title,
         description,
         status,
+        color,
         priority,
         isCompleted = status === "Completed",
         dueDate = null,
@@ -352,4 +500,5 @@ export {
     restoreDeletedTask,
     deleteAllTasksPermanently,
     deleteTaskPermanently,
+    getOverview,
 };

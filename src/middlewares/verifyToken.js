@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import userModel from "../models/userModel.js";
 
-const verifyToken = asyncHandler(async (req, res, next) => {
+const verifyToken = async (req, res, next) => {
     const refreshToken = req.cookies?.RefreshToken;
     let MindToken = req.cookies?.Mind;
     let MeshToken = req.headers["mesh"];
@@ -53,6 +53,6 @@ const verifyToken = asyncHandler(async (req, res, next) => {
     req.user = user;
     // console.log("User verified", user._id);
     next();
-});
+};
 
 export default verifyToken;

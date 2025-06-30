@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 
 const allowedStatus = ["To-do", "In-Progress", "Completed", "Overdue"];
 const allowedPriority = ["High", "Medium", "Low", "None"];
+const allowedColors = ["Yellow", "Blue", "Orange", "Grey", "Lavender"];
 
 const taskValidator = [
     body("title")
@@ -37,6 +38,13 @@ const taskValidator = [
         .isIn(allowedPriority)
         .withMessage("Invalid priority."),
 
+    body("color")
+        .trim()
+        .notEmpty()
+        .withMessage("Color is required.")
+        .isIn(allowedColors)
+        .withMessage("Invalid color."),
+
     body("dueDate")
         .optional({ checkFalsy: true })
         .isISO8601()
@@ -54,7 +62,7 @@ const taskValidator = [
             return true;
         }),
 
-    // body("isCompleted")  
+    // body("isCompleted")
     //     .exists()
     //     .withMessage("isCompleted is required")
     //     .isBoolean()

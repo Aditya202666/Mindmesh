@@ -161,7 +161,19 @@ const refreshToken = asyncHandler(async (req, res) => {
 });
 
 const sendAccountVerificationOtp = asyncHandler(async (req, res) => {
-    const user = req.user;
+    const refreshToken = req.cookies?.RefreshToken;
+
+    if (!refreshToken) {
+        throw new ApiError(401, "Please login.");
+    }
+
+    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const user = await userModel.findById(decodedToken.id);
+
+    if (!user) {
+        throw new ApiError(401, "Please login.");
+    }
 
     if (user.isVerified) {
         throw new ApiError(400, "User is already verified");
@@ -188,9 +200,20 @@ const sendAccountVerificationOtp = asyncHandler(async (req, res) => {
 });
 
 const verifyAccountVerificationOtp = asyncHandler(async (req, res) => {
-    // console.log("verifyAccountVerificationOtp");
-    const user = req.user;
     const { otp } = req.body;
+    const refreshToken = req.cookies?.RefreshToken;
+
+    if (!refreshToken) {
+        throw new ApiError(401, "Please login.");
+    }
+
+    const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const user = await userModel.findById(decodedToken.id);
+
+    if (!user) {
+        throw new ApiError(401, "Please login.");
+    }
 
     if (user.isVerified) {
         throw new ApiError(400, "User is already verified");

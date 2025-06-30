@@ -15,6 +15,8 @@ import {
     restoreDeletedTask,
     deleteAllTasksPermanently,
     deleteTaskPermanently,
+    // getDashboardOverview,
+    getOverview,
 } from "../controllers/personalTaskController.js";
 import {
     subTaskValidator,
@@ -29,7 +31,9 @@ router.use(verifyToken);
 //get all tasks
 router.route("/all").get(getAllPersonalTasks);
 
-// router.route("/overview").get()
+//get overview
+router.route("/overview").get(getOverview);
+// router.route("/overview").get(getOverview);
 
 //get one task
 router.route("/:id").get(getPersonalTask);
@@ -69,6 +73,5 @@ router.route("/all/delete").delete(deleteAllTasksPermanently);
 
 //permanently delete one task
 router.route("/:id/delete").delete(deleteTaskPermanently);
-
 
 export default router;
