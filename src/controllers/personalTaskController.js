@@ -37,7 +37,7 @@ const getOverview = asyncHandler(async (req, res) => {
                     },
                     {
                         $limit: 5,
-                    },
+                    }, 
                 ],
                 overdueLastMonth: [
                     {
@@ -59,7 +59,7 @@ const getOverview = asyncHandler(async (req, res) => {
                         $match: {
                             user: id,
                             isDeleted: false,
-                            createdAt: { $gte: firstOfThisMonth }, 
+                            // createdAt: { $gte: firstOfThisMonth }, 
                         },
                     },
                     {
@@ -82,7 +82,7 @@ const getOverview = asyncHandler(async (req, res) => {
                             allTasks: 1,
                             completedTasks: {
                                 $cond: [
-                                    { $eq: ["$status", "Completed"] },
+                                    { $eq: ["$isCompleted", true] },
                                     1,
                                     0,
                                 ],
@@ -92,7 +92,8 @@ const getOverview = asyncHandler(async (req, res) => {
                                     { $and:[
                                         {  $gte: ["$dueDate", today] },
                                         {  $lt: ["$dueDate", firstOfNextMonth] },
-                                    ] },
+                                        {  $eq: ["$isCompleted", false] },
+                                    ],  },
                                     1,
                                     0, 
                                 ],
@@ -101,7 +102,8 @@ const getOverview = asyncHandler(async (req, res) => {
                                 $cond:[
                                     { $and:[
                                         { $gte: [ "$dueDate", firstOfThisMonth] },
-                                        { $lt: [ "$dueDate", today] }
+                                        { $lt: [ "$dueDate", today] },
+                                        { $eq: [ "$isCompleted", false] },
                                     ]  },
                                     1,
                                     0
@@ -219,6 +221,7 @@ const createTask = asyncHandler(async (req, res) => {
         status,
         priority,
         dueDate,
+        color, 
     });
 
     res.status(201).json(

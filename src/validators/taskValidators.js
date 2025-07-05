@@ -1,9 +1,9 @@
 import { body } from "express-validator";
 import { ApiError } from "../utils/ApiError.js";
 
-const allowedStatus = ["To-do", "In-Progress", "Completed", "Overdue"];
+const allowedStatus = ["To-do", "In-Progress", "Completed"];
 const allowedPriority = ["High", "Medium", "Low", "None"];
-const allowedColors = ["Yellow", "Blue", "Orange", "Grey", "Lavender"];
+const allowedColors = ["Yellow", "Blue",  "Grey", "Coral"];
 
 const taskValidator = [
     body("title")
@@ -11,16 +11,16 @@ const taskValidator = [
         .notEmpty()
         .withMessage("Title is required.")
         .isLength({ max: 50 })
-        .withMessage("Title can't be more than 50 characters.")
-        .escape(),
+        .withMessage("Title can't be more than 50 characters."),
+        // .escape(),
 
     body("description")
         .trim()
         .notEmpty()
         .withMessage("Description is required.")
         .isLength({ max: 200 })
-        .withMessage("Description can't be more than 200 characters.")
-        .escape(),
+        .withMessage("Description can't be more than 200 characters."),
+        // .escape(),
 
     body("status")
         .exists()

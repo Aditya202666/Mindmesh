@@ -55,7 +55,7 @@ const personalTaskSchema = new mongoose.Schema(
 
         color:{
             type: String,
-            enum: ["Yellow", "Blue", "Orange", "Grey", "Lavender" ],
+            enum: ["Yellow", "Blue", "Grey", "Coral" ],
             default: "Yellow",
         },
 
