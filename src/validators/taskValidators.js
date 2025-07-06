@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 
 const allowedStatus = ["To-do", "In-Progress", "Completed"];
 const allowedPriority = ["High", "Medium", "Low", "None"];
-const allowedColors = ["Yellow", "Blue",  "Grey", "Coral"];
+const allowedColors = ["Yellow", "Blue", "Grey", "Coral", "Rose", "Lavender", "Emerald" ];
 
 const taskValidator = [
     body("title")

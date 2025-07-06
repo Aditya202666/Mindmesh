@@ -29,7 +29,25 @@ const getOverview = asyncHandler(async (req, res) => {
                         $match: {
                             user: id,
                             isDeleted: false,
+                            isCompleted: false,
                             dueDate: { $gte: today, $lt: nextSevenDays },
+                        },
+                    },
+                    {
+                        $sort: { dueDate: 1 },
+                    },
+                    {
+                        $limit: 5,
+                    }, 
+                ],
+                inProgressTasks: [
+                    {
+                        $match: {
+                            user: id,
+                            isDeleted: false,
+                            isCompleted: false,
+                            status: "In-Progress",
+                            dueDate: { $gte: today},
                         },
                     },
                     {
@@ -87,6 +105,17 @@ const getOverview = asyncHandler(async (req, res) => {
                                     0,
                                 ],
                             },
+                            inProgressTasks: {
+                                $cond: [
+                                    { $and:[
+                                        {  $gte: ["$dueDate", today] },                      
+                                        {  $eq: ["$status", "In-Progress"] },
+                                        {  $eq: ["$isCompleted", false] },
+                                    ],  },
+                                    1,
+                                    0, 
+                                ],
+                            },
                             pendingTasks: {
                                 $cond: [
                                     { $and:[
@@ -118,6 +147,7 @@ const getOverview = asyncHandler(async (req, res) => {
                             completedTasks: { $sum: "$completedTasks" },
                             pendingTasks: { $sum: "$pendingTasks" },
                             overdueTasks: { $sum: "$overdueTasks" },
+                            inProgressTasks: { $sum: "$inProgressTasks" },
 
                         }
                     }
@@ -127,6 +157,7 @@ const getOverview = asyncHandler(async (req, res) => {
         {
             $project:{
                 dueInSevenDays: 1,
+                inProgressTasks: 1,
                 overdueLastMonth: 1,
                 recentTask: 1,
                 taskDetails: { $first: "$taskDetails" },
