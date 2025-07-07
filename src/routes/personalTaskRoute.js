@@ -28,7 +28,7 @@ const router = Router();
 
 router.use(verifyToken);
 
-//get all tasks
+//get all tasks 
 router.route("/all").get(getAllPersonalTasks);
 
 //get overview
@@ -40,15 +40,15 @@ router.route("/:id").get(getPersonalTask);
 
 //create task, not subTask
 router.route("/create").post(taskValidator, inputErrorHandler, createTask);
-
+   
 //add subtasks
-router.route("/:id").post(subTaskValidator, inputErrorHandler, createSubTask);
+router.route("/:id/sub-task").post(subTaskValidator, inputErrorHandler, createSubTask);
 
 //delete subTasks
 router.route("/:id/:subId").delete(removeSubTask);
 
 //update task
-router.route("/:id").patch(taskCompleted, inputErrorHandler, editPersonalTask);
+router.route("/:id").patch(taskValidator, inputErrorHandler, editPersonalTask);
 
 //delete task
 router.route("/:id").delete(deletePersonalTask);

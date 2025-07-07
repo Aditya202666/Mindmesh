@@ -18,7 +18,7 @@ const taskValidator = [
         .trim()
         .notEmpty()
         .withMessage("Description is required.")
-        .isLength({ max: 200 })
+        .isLength({ max: 500 })
         .withMessage("Description can't be more than 200 characters."),
         // .escape(),
 
@@ -78,31 +78,6 @@ const subTaskValidator = [
         .isLength({ max: 50 })
         .withMessage("Title can't be more than 50 characters.")
         .escape(),
-
-    body("isCompleted")
-        .exists()
-        .withMessage("isCompleted is required")
-        .isBoolean()
-        .withMessage("isComplete Must be a Boolean")
-        .toBoolean(),
-
-    body("dueDate")
-        .optional({ checkFalsy: true })
-        .isISO8601()
-        .withMessage("Due date must be a valid ISO 8601 date")
-        .isIn(allowedPriority)
-        .custom((value) => {
-            const inputDate = new Date(value);
-            const today = new Date();
-
-            today.setHours(0, 0, 0, 0);
-
-            if (inputDate < today) {
-                new ApiError(400, "Due date can't be in the past.");
-            }
-
-            return true;
-        }),
 ];
 
 export { taskValidator, subTaskValidator };

@@ -33,7 +33,7 @@ const personalTaskSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
-            maxLength: 200,
+            maxLength: 500,
         },
 
         dueDate: {
