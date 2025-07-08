@@ -20,7 +20,20 @@ const getOverview = asyncHandler(async (req, res) => {
   //-- dueDate in  next seven days
   //-- overdue from last month
   //-- recent tasks
-  //
+
+  const subTaskAddFieldStage = {
+    totalSubTasks: { $size: "$subTasks" },
+    completedSubTasks: {
+      $size: {
+        $filter: {
+          input: "$subTasks",
+          as: "subTask",
+          cond: { $eq: ["$$subTask.isCompleted", true] },
+        },
+      },
+    },
+  };
+
   const overview = await personalTaskModel.aggregate([
     {
       $facet: {
@@ -33,6 +46,7 @@ const getOverview = asyncHandler(async (req, res) => {
               dueDate: { $gte: today, $lt: nextSevenDays },
             },
           },
+          { $addFields: subTaskAddFieldStage },
           {
             $sort: { dueDate: 1 },
           },
@@ -50,6 +64,8 @@ const getOverview = asyncHandler(async (req, res) => {
               dueDate: { $gte: today },
             },
           },
+          { $addFields: subTaskAddFieldStage },
+
           {
             $sort: { dueDate: 1 },
           },
@@ -62,9 +78,12 @@ const getOverview = asyncHandler(async (req, res) => {
             $match: {
               user: id,
               isDeleted: false,
+              isCompleted: false,
               dueDate: { $gte: firstOfLastMonth, $lt: today },
             },
           },
+          { $addFields: subTaskAddFieldStage },
+
           {
             $sort: { dueDate: 1 },
           },
@@ -80,6 +99,7 @@ const getOverview = asyncHandler(async (req, res) => {
               // createdAt: { $gte: firstOfThisMonth },
             },
           },
+          { $addFields: subTaskAddFieldStage },
           {
             $sort: { createdAt: -1 },
           },
@@ -265,20 +285,20 @@ const createSubTask = asyncHandler(async (req, res) => {
   const { id: taskId } = req.params;
   const userId = req.user._id;
   console.log(taskId, userId);
-  const { title, isCompleted = false } = req.body;
+  const { title } = req.body;
 
   const personalTask = await personalTaskModel.findOneAndUpdate(
     { _id: taskId, user: userId, isCompleted: false, isDeleted: false },
     {
       $push: {
-        subTasks: { title, isCompleted },
+        subTasks: { title },
       },
     },
     { new: true }
   );
 
   if (!personalTask) {
-    res.status(404).json(new ApiResponse(404, "Task not found."));
+    return res.status(404).json(new ApiResponse(404, "Task not found."));
   }
   res
     .status(200)
