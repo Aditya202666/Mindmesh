@@ -17,6 +17,7 @@ import {
     deleteTaskPermanently,
     // getDashboardOverview,
     getOverview,
+    getPersonalTaskDetails,
 } from "../controllers/personalTaskController.js";
 import {
     subTaskValidator,
@@ -33,7 +34,9 @@ router.route("/all").get(getAllPersonalTasks);
 
 //get overview
 router.route("/overview").get(getOverview);
-// router.route("/overview").get(getOverview);
+
+//get details
+router.route("/details").get(getPersonalTaskDetails);
 
 //get one task
 router.route("/:id").get(getPersonalTask);
