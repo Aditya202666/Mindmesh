@@ -74,7 +74,7 @@ const personalTaskSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-personalTaskSchema.index({ title: "text", desc: "text" });
+personalTaskSchema.index({ title: "text", description: "text" });
 
 
 

@@ -306,15 +306,15 @@ const getPersonalTaskDetails = asyncHandler(async (req, res) => {
 });
 
 const getAllPersonalTasks = asyncHandler(async (req, res) => {
-
   const id = req.user._id;
-  const status = req.query.status || "All"
+  const status = req.query.status || "All";
   const page = parseInt(req.query.page) || 1;
+  const searchQuery = req.query.searchQuery || "";
   const limit = 20;
   const skip = (page - 1) * limit;
   let fromDate = new Date(req.query.fromDate);
 
-  console.log(req.query);
+  // console.log(req.query);
 
   const matchStage = {
     user: id,
@@ -322,64 +322,65 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
     createdAt: { $gte: fromDate },
   };
 
-  if(status !== "All"){
-
-    matchStage.status = status
-
+  if (status !== "All") {
+    matchStage.status = status;
   }
+//   const indexes = await personalTaskModel.collection.getIndexes();
+// console.log("Current Indexes:", indexes);
 
+const baseMatch = {
+  ...matchStage,
+  ...(searchQuery ? { $text: { $search: searchQuery } } : {}),
+};
 
-  const personalTasks = await personalTaskModel.aggregate([
-    {
-      $facet: {
-        allTasks: [
-          {
-            $match: matchStage,
-          },
-          {
-            $addFields: {
-              totalSubTasks: { $size: "$subTasks" },
-              completedSubTasks: {
-                $size: {
-                  $filter: {
-                    input: "$subTasks",
-                    as: "subTask",
-                    cond: { $eq: ["$$subTask.isCompleted", true] },
-                  },
+const aggregatePipeline = [
+  { $match: baseMatch },
+  ...(searchQuery ? [{ $addFields: { score: { $meta: "textScore" } } }] : []),
+  {
+    $facet: {
+      allTasks: [
+        {
+          $addFields: {
+            totalSubTasks: { $size: "$subTasks" },
+            completedSubTasks: {
+              $size: {
+                $filter: {
+                  input: "$subTasks",
+                  as: "subTask",
+                  cond: { $eq: ["$$subTask.isCompleted", true] },
                 },
               },
             },
           },
-          {
-            $sort: { createdAt: 1 },
-          },
-          {
-            $skip: skip,
-          },
-          {
-            $limit: limit,
-          },
-        ],
+        },
+        {
+          $sort: searchQuery
+            ? { score: { $meta: "textScore" } }
+            : { createdAt: 1 },
+        },
+        { $skip: skip },
+        { $limit: limit },
+      ],
 
-        taskDetails: [
-          {
-            $match: matchStage,
+      taskDetails: [
+        {
+          $group: {
+            _id: null,
+            totalTasks: { $sum: 1 },
           },
-          {
-            $group:{
-              _id: null,
-              totalTasks:{ $sum: 1}
-            }
-          },{
-            $addFields:{
-              showingFrom: (page -1) * limit,
-              showingTo: page*limit
-            }
-          }
-        ],
-      },
+        },
+        {
+          $addFields: {
+            showingFrom: skip,
+            showingTo: page * limit,
+          },
+        },
+      ],
     },
-  ]);
+  },
+];
+
+const  personalTasks = await personalTaskModel.aggregate(aggregatePipeline)
 
   res
     .status(200)

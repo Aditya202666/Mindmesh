@@ -15,7 +15,7 @@ import {
     restoreDeletedTask,
     deleteAllTasksPermanently,
     deleteTaskPermanently,
-    // getDashboardOverview,
+    // searchPersonalTasks,
     getOverview,
     getPersonalTaskDetails,
 } from "../controllers/personalTaskController.js";
@@ -40,6 +40,9 @@ router.route("/details").get(getPersonalTaskDetails);
 
 //get one task
 router.route("/:id").get(getPersonalTask);
+
+// search personal task
+// router.route("/search").get(searchPersonalTasks)
 
 //create task, not subTask
 router.route("/create").post(taskValidator, inputErrorHandler, createTask);
