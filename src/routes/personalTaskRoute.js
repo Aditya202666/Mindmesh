@@ -18,6 +18,7 @@ import {
     // searchPersonalTasks,
     getOverview,
     getPersonalTaskDetails,
+    changeTaskStatusToInProgress,
 } from "../controllers/personalTaskController.js";
 import {
     subTaskValidator,
@@ -29,40 +30,40 @@ const router = Router();
 
 router.use(verifyToken);
 
-//get all tasks 
+//--get all tasks 
 router.route("/all").get(getAllPersonalTasks);
 
-//get overview
+//--get overview
 router.route("/overview").get(getOverview);
 
-//get details
+//--get details
 router.route("/details").get(getPersonalTaskDetails);
 
-//get one task
+//--get one task
 router.route("/:id").get(getPersonalTask);
 
-// search personal task
-// router.route("/search").get(searchPersonalTasks)
-
-//create task, not subTask
+//--create task, not subTask
 router.route("/create").post(taskValidator, inputErrorHandler, createTask);
    
-//add subtasks
+//--add subtasks
 router.route("/:id/sub-task").post(subTaskValidator, inputErrorHandler, createSubTask);
  
-//delete subTasks
+//--delete subTasks
 router.route("/:id/:subId").delete(removeSubTask);
 
-//update task
+//--update task
 router.route("/:id").patch(taskValidator, inputErrorHandler, editPersonalTask);
 
-//delete task
+// -- change task status to in-progress
+router.route('/:id/pickup').patch(changeTaskStatusToInProgress)
+
+//--delete task
 router.route("/:id").delete(deletePersonalTask);
 
-// complete task and all subtasks
+//-- complete task and all subtasks
 router.route("/:id/completed").patch(taskCompleted);
 
-// complete subTask
+//-- complete subTask
 router.route("/:id/:subId/completed").patch(subTaskCompleted);
 
 //get deleted tasks

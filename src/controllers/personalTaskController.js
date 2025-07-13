@@ -261,7 +261,6 @@ const getPersonalTaskDetails = asyncHandler(async (req, res) => {
               isDeleted: false,
               isCompleted: false,
               dueDate: {
-                $gte: firstOfLastMonth,
                 $lt: today,
                 $ne: null,
               },
@@ -282,7 +281,6 @@ const getPersonalTaskDetails = asyncHandler(async (req, res) => {
               isCompleted: false,
               dueDate: {
                 $gte: today,
-                $lt: firstOfNextMonth,
                 $ne: null,
               },
             },
@@ -297,6 +295,8 @@ const getPersonalTaskDetails = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  // console.log(taskDetails[0])
 
   res
     .status(200)
@@ -314,73 +314,87 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
   let fromDate = new Date(req.query.fromDate);
 
-  // console.log(req.query);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const matchStage = {
     user: id,
     isDeleted: false,
-    createdAt: { $gte: fromDate },
+    // createdAt: { $gte: fromDate },
   };
 
-  if (status !== "All") {
+  if (status === "Pending") {
+    matchStage.dueDate = { $gte: fromDate, $ne:null }
+    matchStage.isCompleted = false
+    // matchStage.createdAt = { $gte: fromDate }
+  } else if (status === "Overdue") {
+    matchStage.dueDate = { $lt: today , $gte: fromDate, $ne:null };
+    matchStage.isCompleted = false
+  } else if (status === "Completed"){
     matchStage.status = status;
+    matchStage.createdAt = { $gte: fromDate }
+  }else if (status === "In-Progress") {
+    matchStage.status = status;
+    matchStage.createdAt = { $gte: fromDate }
+  }else{
+    matchStage.createdAt = { $gte: fromDate }
   }
-//   const indexes = await personalTaskModel.collection.getIndexes();
-// console.log("Current Indexes:", indexes);
+  //   const indexes = await personalTaskModel.collection.getIndexes();
+  // console.log("Current Indexes:", indexes);
 
-const baseMatch = {
-  ...matchStage,
-  ...(searchQuery ? { $text: { $search: searchQuery } } : {}),
-};
-
-const aggregatePipeline = [
-  { $match: baseMatch },
-  ...(searchQuery ? [{ $addFields: { score: { $meta: "textScore" } } }] : []),
-  {
-    $facet: {
-      allTasks: [
-        {
-          $addFields: {
-            totalSubTasks: { $size: "$subTasks" },
-            completedSubTasks: {
-              $size: {
-                $filter: {
-                  input: "$subTasks",
-                  as: "subTask",
-                  cond: { $eq: ["$$subTask.isCompleted", true] },
+  const baseMatch = {
+    ...matchStage,
+    ...(searchQuery ? { $text: { $search: searchQuery } } : {}),
+  };
+  console.log(baseMatch);
+  const aggregatePipeline = [
+    { $match: baseMatch },
+    ...(searchQuery ? [{ $addFields: { score: { $meta: "textScore" } } }] : []),
+    {
+      $facet: {
+        allTasks: [
+          {
+            $addFields: {
+              totalSubTasks: { $size: "$subTasks" },
+              completedSubTasks: {
+                $size: {
+                  $filter: {
+                    input: "$subTasks",
+                    as: "subTask",
+                    cond: { $eq: ["$$subTask.isCompleted", true] },
+                  },
                 },
               },
             },
           },
-        },
-        {
-          $sort: searchQuery
-            ? { score: { $meta: "textScore" } }
-            : { createdAt: 1 },
-        },
-        { $skip: skip },
-        { $limit: limit },
-      ],
+          {
+            $sort: searchQuery
+              ? { score: { $meta: "textScore" } }
+              : { createdAt: 1 },
+          },
+          { $skip: skip },
+          { $limit: limit },
+        ],
 
-      taskDetails: [
-        {
-          $group: {
-            _id: null,
-            totalTasks: { $sum: 1 },
+        taskDetails: [
+          {
+            $group: {
+              _id: null,
+              totalTasks: { $sum: 1 },
+            },
           },
-        },
-        {
-          $addFields: {
-            showingFrom: skip,
-            showingTo: page * limit,
+          {
+            $addFields: {
+              showingFrom: skip,
+              showingTo: page * limit,
+            },
           },
-        },
-      ],
+        ],
+      },
     },
-  },
-];
+  ];
 
-const  personalTasks = await personalTaskModel.aggregate(aggregatePipeline)
+  const personalTasks = await personalTaskModel.aggregate(aggregatePipeline);
 
   res
     .status(200)
@@ -491,6 +505,35 @@ const editPersonalTask = asyncHandler(async (req, res) => {
       new: true,
     }
   );
+  if (!personalTask) {
+    res.status(404).json(new ApiResponse(404, "Task not found."));
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Task updated successfully.", personalTask));
+});
+
+const changeTaskStatusToInProgress = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { id: taskId } = req.params;
+
+  const personalTask = await personalTaskModel.findOneAndUpdate(
+    {
+      _id: taskId,
+      user: userId,
+      isDeleted: false,
+      isCompleted: false,
+    },
+    {
+      $set: {
+        status: "In-Progress",
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
   if (!personalTask) {
     res.status(404).json(new ApiResponse(404, "Task not found."));
   }
@@ -693,4 +736,5 @@ export {
   deleteTaskPermanently,
   getOverview,
   getPersonalTaskDetails,
+  changeTaskStatusToInProgress,
 };
