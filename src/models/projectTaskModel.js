@@ -7,9 +7,6 @@ const subTaskSchema = new mongoose.Schema({
         trim: true,
         maxLength: 50,
     },
-    dueDate: {
-        type: Date,
-    },
     isCompleted: {
         type: Boolean,
         default: false,
@@ -20,7 +17,7 @@ const projectTaskSchema = new mongoose.Schema(
     {
         project: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Project",
+            ref: "Workspace",
             required: true,
         },
 
@@ -28,7 +25,7 @@ const projectTaskSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
-            maxLength: 50,
+            maxLength: 100,
         },
 
         description: {
@@ -40,6 +37,7 @@ const projectTaskSchema = new mongoose.Schema(
 
         dueDate: {
             type: Date,
+            default: null
         },
 
         subTasks: [subTaskSchema],
@@ -73,16 +71,9 @@ const projectTaskSchema = new mongoose.Schema(
             ref: "User",
         },
 
-        activityLog: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "ActivityLog",
-            },
-        ],
-
         status:{
             type: String,
-            enum:["To-do","In-Progress","Completed", "Overdue"],
+            enum:["To-do","In-Progress","Completed", "In-Review"],
             default: "To-do",
         },
 

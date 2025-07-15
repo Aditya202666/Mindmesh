@@ -45,8 +45,8 @@ import personalTaskRoute from './routes/personalTaskRoute.js'
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/user", userRoute);
-app.use("/api/v1/workspace", workspaceRoute);
 app.use("/api/v1/personalTask", personalTaskRoute);
+app.use("/api/v1/workspace", workspaceRoute);
 
 // error Handler MiddleWare
 app.use(errorHandler);
