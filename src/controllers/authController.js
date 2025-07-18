@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+    import jwt from "jsonwebtoken";
 import {
     MeshCookie,
     MindCookie,
@@ -13,7 +13,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateOtpEmailTemplate, sendEmail } from "../utils/sendEmail.js";
 import { transformUser } from "../utils/transformData.js";
-import checkUsernameExists from "../utils/checkUsername.js";
+import {checkUsernameExists} from "../utils/check.js";
 import personalTaskModel from "../models/personalTaskModel.js";
 
 const registerUser = asyncHandler(async (req, res) => {

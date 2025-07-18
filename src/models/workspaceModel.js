@@ -2,14 +2,6 @@ import mongoose from "mongoose";
 
 const workspaceSchema = new mongoose.Schema(
   {
-    // Unique identifier for the workspace
-    // idToken: {
-    //   type: String,
-    //   required: true,
-    //   unique: true,
-    //   trim: true,
-    // },
-
     name: {
       type: String,
       required: true,
@@ -31,33 +23,13 @@ const workspaceSchema = new mongoose.Schema(
       default: "",
     },
 
+    // kind of meta data
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,
     },
-
-    admins: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
-
-    members: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-        },
-    ],
-
-    // projects: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "Project",
-    //     },
-    // ],
   },
   { timestamps: true }
 );

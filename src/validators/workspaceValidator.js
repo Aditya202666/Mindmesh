@@ -1,21 +1,32 @@
 import { body } from "express-validator";
 
-const bodyAndDescriptionValidator = (title = 50, desc = 500) => {
-    return [
-        body("name")
-            .trim()
-            .notEmpty()
-            .withMessage("Name is required.")
-            .isLength({ max: title })
-            .withMessage("Name can't be more than 50 characters."),
+const titleAndDescriptionValidator = (title = 200, desc = 2000) => {
+  return [
+    body("title")
+      .optional({ checkFalsy: true })
+      .trim()
+      .withMessage("Title is required.")
+      .isLength({ max: title })
+      .withMessage(`Title can't be more than ${title} characters.`),
 
-        body("description")
-            .trim()
-            .notEmpty()
-            .withMessage("Description is required.")
-            .isLength({ max: desc })
-            .withMessage("Description can't be more than 200 characters."),
-    ];
+    body("description")
+      .optional({ checkFalsy: true })
+      .trim()
+      .withMessage("Description is required.")
+      .isLength({ max: desc })
+      .withMessage(`Description can't be more than ${desc} characters.`),
+  ];
 };
 
-export { bodyAndDescriptionValidator };
+const nameValidator = (name = 50) => {
+  return [
+    body("name")
+      .trim()
+      .notEmpty()
+      .withMessage("Name is required.")
+      .isLength({ max: name })
+      .withMessage(`Name can't be more than ${name} characters.`),
+  ];
+};
+
+export { titleAndDescriptionValidator, nameValidator };

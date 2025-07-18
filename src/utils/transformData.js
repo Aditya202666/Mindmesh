@@ -13,6 +13,16 @@ const transformUser = (user) => {
     };
 };
 
+const transformWorkspace = (workspace) => {
+    return {
+      _id: workspace._id,
+      name: workspace.name,
+      title: workspace.title,
+      description: workspace.description,
+      createdBy: workspace.createdBy,
+    };
+};
 
 
-export { transformUser };
+
+export { transformUser, transformWorkspace,  };

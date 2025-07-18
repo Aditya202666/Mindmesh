@@ -1,38 +1,65 @@
 import { Router } from "express";
 import verifyToken from "../middlewares/verifyToken.js";
-import { bodyAndDescriptionValidator } from "../validators/workspaceValidator.js";
+import {
+  nameValidator,
+  titleAndDescriptionValidator,
+} from "../validators/workspaceValidator.js";
 import inputErrorHandler from "../middlewares/inputErrorHandler.js";
-import checkAuthority from "../middlewares/checkAuthority.js";
+import {
+  assignAdmin,
+  createWorkspace,
+  getMembers,
+  getWorkspaceDetails,
+  getWorkspaces,
+  removeAdmin,
+  removeMember,
+  updateName,
+  updateTitleAndDescription,
+} from "../controllers/workspaceController.js";
+
 const router = Router();
 
 router.use(verifyToken);
 
+// create workspace
+router
+  .route("/create")
+  .post(nameValidator(50), inputErrorHandler, createWorkspace);
 
+// switch workspace
+router.route("/:id").get(getWorkspaceDetails);
 
+// get all workspaces
+router.route("/all").get(getWorkspaces);
 
+// update workspace title and description
+router
+  .route("/:id")
+  .patch(
+    titleAndDescriptionValidator,
+    inputErrorHandler,
+    updateTitleAndDescription
+  );
 
-/*   
--- create workspace
--- update workspace name and description
--- get workspace details 
--- assign admin
--- remove admin
-delete
+// update workspace name
+router
+  .route("/:id/name")
+  .patch(nameValidator(50), inputErrorHandler, updateName);
 
+// assign admin
+router.route("/:id/admin").post(assignAdmin);
 
-get members
-remove members
-send invitation
+// demote admin to member
+router.route("/:id/admin").delete(removeAdmin);
 
-project-->  
-create 
-update
-delete
-add members
-remove members
+// remove member
+router.route("/:id/member").delete(removeMember);
 
-assign manager
+// get all members
+router.route("/:id/members").get(getMembers);
 
- */
+// todo
+// send invitation
+// search member
 
 export default router;

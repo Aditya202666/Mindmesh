@@ -2,7 +2,7 @@ import { populate } from "dotenv";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import checkUsernameExists from "../utils/checkUsername.js";
+import {checkUsernameExists} from "../utils/check.js";
 import {
     deleteFromCloudinary,
     uploadOnCloudinary,
