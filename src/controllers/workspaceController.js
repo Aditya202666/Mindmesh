@@ -27,12 +27,15 @@ const createWorkspace = asyncHandler(async (req, res) => {
 
   const idCard = await idCardModel.create({
     user: userId,
-    workspace: workspace._id,
+    workspaceId: workspace._id,
     workspaceName: workspace.name,
     authority: "owner",
   });
 
-  res.status(201).json(new ApiResponse(201, "Workspace created successfully"));
+  res.status(201).json(new ApiResponse(201, "Workspace created successfully", {
+    workspaceId: workspace._id,
+    workspaceName: workspace.name,
+  }));
 });
 
 const getWorkspaceDetails = asyncHandler(async (req, res) => {

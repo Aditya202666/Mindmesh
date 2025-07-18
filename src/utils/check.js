@@ -12,10 +12,10 @@ const checkUsernameExists = async (newUsername, currentUsername = "") => {
   }
 };
 
-const checkIdCardExists = async (user, workspace) => {
+const checkIdCardExists = async (user, workspaceId) => {
   const idCard = await idCardModel.findOne({
     user,
-    workspace,
+    workspaceId,
   });
 
   if (idCard) {

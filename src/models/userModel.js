@@ -38,27 +38,6 @@ const userSchema = new mongoose.Schema(
             url: String,
         },
 
-        // personalTasks: [
-        //     {
-        //         type: mongoose.Schema.Types.ObjectId,
-        //         ref: "PersonalTask",
-        //     },
-        // ],
-
-        workspaces: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Workspace"
-            }
-        ],
-
-        invitations: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Invitation",
-            },
-        ],
-
         password: {
             type: String,
             required: true,

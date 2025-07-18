@@ -74,7 +74,7 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
-    const user = await userModel.findOne({ $or: [{ email }, { username }] }).populate("workspaces", "name");
+    const user = await userModel.findOne({ $or: [{ email }, { username }] })
     
 
     if (!user) {
@@ -130,7 +130,7 @@ const refreshToken = asyncHandler(async (req, res) => {
 
     const decodedToken = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 
-    const user = await userModel.findById(decodedToken.id).populate("workspaces", "name");
+    const user = await userModel.findById(decodedToken.id)
 
     if (!user) {
         throw new ApiError(401, "Please login.");
@@ -320,18 +320,18 @@ const changePassword = asyncHandler(async (req, res) => {
 
 const deactivateAccount = asyncHandler(async (req, res) => {
     const user = req.user;
-
+    // todo: handle all situations where user is in a workspace or in a project
     // remove user from workspace
-    await workspaceModel.updateMany(
-        { members: user._id },
-        { $pull: { members: user._id } }
-    );
+    // await workspaceModel.updateMany(
+    //     { members: user._id },
+    //     { $pull: { members: user._id } }
+    // );
 
     //remove user form projects
-    await projectModel.updateMany(
-        { members: user._id },
-        { $pull: { members: user._id } }
-    );
+    // await projectModel.updateMany(
+    //     { members: user._id },
+    //     { $pull: { members: user._id } }
+    // );
 
     //remove user personal Tasks
     await personalTaskModel.deleteMany({ user: user._id });
@@ -339,8 +339,6 @@ const deactivateAccount = asyncHandler(async (req, res) => {
     // set  isDeleted to true and clear data
     user.isDeleted = true;
     user.refreshToken = "";
-    user.workspaces = [];
-    user.personaltasks = [];
     await user.save();
 
     res.clearCookie(refreshTokenCookie, secureCookieOptions)

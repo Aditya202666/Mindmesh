@@ -9,7 +9,7 @@ const idCardSchema = new mongoose.Schema({
         index: true,
     },
 
-    workspace: {
+    workspaceId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Workspace",
         required: true,
