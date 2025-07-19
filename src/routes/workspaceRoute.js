@@ -26,11 +26,11 @@ router
   .route("/create")
   .post(nameValidator(50), inputErrorHandler, createWorkspace);
 
-// switch workspace
-router.route("/:id").get(getWorkspaceDetails);
-
 // get all workspaces
 router.route("/all").get(getWorkspaces);
+
+// switch workspace
+router.route("/:id").get(getWorkspaceDetails);
 
 // update workspace title and description
 router
@@ -59,6 +59,9 @@ router.route("/:id/member").delete(removeMember);
 router.route("/:id/members").get(getMembers);
 
 // todo
+// create project in workspace
+// update project name
+// delete project
 // send invitation
 // search member
 

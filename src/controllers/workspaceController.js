@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { checkIdCardExists } from "../utils/check.js";
+import projectModel from "../models/projectModel.js";
 
 const createWorkspace = asyncHandler(async (req, res) => {
   const { _id: userId } = req.user;
@@ -32,10 +33,12 @@ const createWorkspace = asyncHandler(async (req, res) => {
     authority: "owner",
   });
 
-  res.status(201).json(new ApiResponse(201, "Workspace created successfully", {
-    workspaceId: workspace._id,
-    workspaceName: workspace.name,
-  }));
+  res.status(201).json(
+    new ApiResponse(201, "Workspace created successfully", {
+      workspaceId: workspace._id,
+      workspaceName: workspace.name,
+    })
+  );
 });
 
 const getWorkspaceDetails = asyncHandler(async (req, res) => {
@@ -53,15 +56,30 @@ const getWorkspaceDetails = asyncHandler(async (req, res) => {
     select: "username _id", // Only select these two fields
   });
 
-  res.status(200).json(new ApiResponse(200, "Workspace found", workspace));
+  if (!workspace) {
+    throw new ApiError(404, "Workspace not found");
+  }
+
+  const projects = await projectModel
+    .find({ workspace: workspaceId })
+    .select("name");
+
+  res.status(200).json(new ApiResponse(200, "Workspace found", {
+    workspace,
+    projects,
+    authority: idCard.authority
+  }));
 });
 
 const getWorkspaces = asyncHandler(async (req, res) => {
+
+  // console.log('here')
   const userId = req.user._id;
+
 
   const idCards = await idCardModel
     .find({ user: userId })
-    .select("workspace, workspaceName");
+    .select("workspaceId workspaceName -_id");
 
   res.status(200).json(new ApiResponse(200, "Workspaces found", idCards));
 });
