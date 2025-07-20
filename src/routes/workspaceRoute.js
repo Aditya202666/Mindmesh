@@ -7,8 +7,9 @@ import {
 import inputErrorHandler from "../middlewares/inputErrorHandler.js";
 import {
   assignAdmin,
+  createProject,
   createWorkspace,
-  getMembers,
+  // getMembers,
   getWorkspaceDetails,
   getWorkspaces,
   removeAdmin,
@@ -21,15 +22,15 @@ const router = Router();
 
 router.use(verifyToken);
 
-// create workspace
+// --create workspace
 router
   .route("/create")
   .post(nameValidator(50), inputErrorHandler, createWorkspace);
 
-// get all workspaces
+// --get all workspaces
 router.route("/all").get(getWorkspaces);
 
-// switch workspace
+// --switch workspace
 router.route("/:id").get(getWorkspaceDetails);
 
 // update workspace title and description
@@ -56,10 +57,13 @@ router.route("/:id/admin").delete(removeAdmin);
 router.route("/:id/member").delete(removeMember);
 
 // get all members
-router.route("/:id/members").get(getMembers);
+// router.route("/:id/members").get(getMembers);
 
 // todo
+
 // create project in workspace
+router.route("/:id/project").post(nameValidator(50), inputErrorHandler, createProject);
+
 // update project name
 // delete project
 // send invitation
