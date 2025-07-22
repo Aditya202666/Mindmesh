@@ -314,6 +314,15 @@ const createProject = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not authorized to create a project");
   }
 
+  const projectExists = await projectModel.findOne({
+    name,
+    workspace: workspaceId,
+  });
+
+  if (projectExists) {
+    throw new ApiError(400, "Project already exists");
+  }
+
   const project = await projectModel.create({
     name,
     workspace: workspaceId,

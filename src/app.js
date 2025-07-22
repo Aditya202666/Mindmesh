@@ -41,12 +41,13 @@ import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import workspaceRoute from "./routes/workspaceRoute.js";
 import personalTaskRoute from './routes/personalTaskRoute.js'
-
+import projectTaskRoute from './routes/projectTaskRoute.js'
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/personalTask", personalTaskRoute);
 app.use("/api/v1/workspace", workspaceRoute);
+app.use("/api/v1/projectTask/:workspaceId", projectTaskRoute);
 
 // error Handler MiddleWare
 app.use(errorHandler);

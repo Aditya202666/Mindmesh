@@ -1,9 +1,12 @@
 import { body } from "express-validator";
 import { ApiError } from "../utils/ApiError.js";
+import mongoose from "mongoose";
 
 const allowedStatus = ["To-do", "In-Progress", "Completed"];
 const allowedPriority = ["High", "Medium", "Low", "None"];
 const allowedColors = ["Yellow", "Blue", "Grey", "Coral", "Rose", "Lavender", "Emerald" ];
+
+const isValidObjectId = (value) => mongoose.Types.ObjectId.isValid(value);
 
 const taskValidator = [
     body("title")
@@ -80,4 +83,49 @@ const subTaskValidator = [
         .escape(),
 ];
 
-export { taskValidator, subTaskValidator };
+const projectTaskValidator = [
+
+
+  body("project")
+    .optional({ checkFalsy: true })
+    .custom(isValidObjectId).withMessage("Invalid project ID."),
+
+  body("title")
+    .notEmpty().withMessage("Title is required.")
+    .isString().withMessage("Title must be a string.")
+    .isLength({ max: 100 }).withMessage("Title must be under 100 characters."),
+
+  body("description")
+    .notEmpty().withMessage("Description is required.")
+    .isString().withMessage("Description must be a string.")
+    .isLength({ max: 1000 }).withMessage("Description must be under 1000 characters."),
+
+  body("dueDate")
+    .optional({ checkFalsy: true })
+    .isISO8601().withMessage("Due date must be a valid date."),
+
+  body("inform")
+    .optional()
+    .isBoolean().withMessage("Inform must be a boolean."),
+
+  body("assignedTo")
+    .optional({ checkFalsy: true })
+    .isArray().withMessage("assignedTo must be an array."),
+  
+  body("assignedTo.*")
+    .optional()
+    .custom(isValidObjectId).withMessage("Each assigned user ID must be valid."),
+
+  body("status")
+    .optional()
+    .isIn(allowedStatus)
+    .withMessage("Status must be one of: To-do, In-Progress, Completed."),
+
+  body("priority")
+    .optional()
+    .isIn(allowedPriority)
+    .withMessage("Priority must be one of: High, Medium, Low, None."),
+];
+
+
+export { taskValidator, subTaskValidator, projectTaskValidator };
