@@ -13,9 +13,9 @@ const getOverview = asyncHandler(async (req, res) => {
     now.getMonth(),
     now.getDate() + 7
   );
-  const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  // const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  // const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
   //-- dueDate in  next seven days
   //-- overdue from last month
@@ -106,72 +106,6 @@ const getOverview = asyncHandler(async (req, res) => {
             $limit: 5,
           },
         ],
-        // taskDetails: [
-        //   {
-        //     $match: {
-        //       user: id,
-        //       isDeleted: false,
-        //       dueDate: { $gte: firstOfThisMonth },
-        //     },
-        //   },
-        //   {
-        //     $addFields: {
-        //       allTasks: 1,
-        //       completedTasks: {
-        //         $cond: [{ $eq: ["$isCompleted", true] }, 1, 0],
-        //       },
-        //       inProgressTasks: {
-        //         $cond: [
-        //           {
-        //             $and: [
-        //               { $gte: ["$dueDate", today] },
-        //               { $eq: ["$status", "In-Progress"] },
-        //               { $eq: ["$isCompleted", false] },
-        //             ],
-        //           },
-        //           1,
-        //           0,
-        //         ],
-        //       },
-        //       pendingTasks: {
-        //         $cond: [
-        //           {
-        //             $and: [
-        //               { $gte: ["$dueDate", today] },
-        //               { $lt: ["$dueDate", firstOfNextMonth] },
-        //               { $eq: ["$isCompleted", false] },
-        //             ],
-        //           },
-        //           1,
-        //           0,
-        //         ],
-        //       },
-        //       overdueTasks: {
-        //         $cond: [
-        //           {
-        //             $and: [
-        //               { $gte: ["$dueDate", firstOfThisMonth] },
-        //               { $lt: ["$dueDate", today] },
-        //               { $eq: ["$isCompleted", false] },
-        //             ],
-        //           },
-        //           1,
-        //           0,
-        //         ],
-        //       },
-        //     },
-        //   },
-        //   {
-        //     $group: {
-        //       _id: null,
-        //       allTasks: { $sum: "$allTasks" },
-        //       completedTasks: { $sum: "$completedTasks" },
-        //       pendingTasks: { $sum: "$pendingTasks" },
-        //       overdueTasks: { $sum: "$overdueTasks" },
-        //       inProgressTasks: { $sum: "$inProgressTasks" },
-        //     },
-        //   },
-        // ],
       },
     },
     {
@@ -180,7 +114,6 @@ const getOverview = asyncHandler(async (req, res) => {
         inProgressTasks: 1,
         overdueLastMonth: 1,
         recentTask: 1,
-        // taskDetails: { $first: "$taskDetails" },
       },
     },
   ]);
@@ -195,14 +128,14 @@ const getPersonalTaskDetails = asyncHandler(async (req, res) => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const nextSevenDays = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 7
-  );
+  // const nextSevenDays = new Date(
+  //   now.getFullYear(),
+  //   now.getMonth(),
+  //   now.getDate() + 7
+  // );
   const firstOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  // const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  // const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
   const taskDetails = await personalTaskModel.aggregate([
     {
@@ -324,20 +257,20 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
   };
 
   if (status === "Pending") {
-    matchStage.dueDate = { $gte: fromDate, $ne:null }
-    matchStage.isCompleted = false
+    matchStage.dueDate = { $gte: fromDate, $ne: null };
+    matchStage.isCompleted = false;
     // matchStage.createdAt = { $gte: fromDate }
   } else if (status === "Overdue") {
-    matchStage.dueDate = { $lt: today , $gte: fromDate, $ne:null };
-    matchStage.isCompleted = false
-  } else if (status === "Completed"){
+    matchStage.dueDate = { $lt: today, $gte: fromDate, $ne: null };
+    matchStage.isCompleted = false;
+  } else if (status === "Completed") {
     matchStage.status = status;
-    matchStage.createdAt = { $gte: fromDate }
-  }else if (status === "In-Progress") {
+    matchStage.createdAt = { $gte: fromDate };
+  } else if (status === "In-Progress") {
     matchStage.status = status;
-    matchStage.createdAt = { $gte: fromDate }
-  }else{
-    matchStage.createdAt = { $gte: fromDate }
+    matchStage.createdAt = { $gte: fromDate };
+  } else {
+    matchStage.createdAt = { $gte: fromDate };
   }
   //   const indexes = await personalTaskModel.collection.getIndexes();
   // console.log("Current Indexes:", indexes);
@@ -404,6 +337,7 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
 const createTask = asyncHandler(async (req, res) => {
   console.log("Creating a new personal task", req.body);
   const {
+    project,
     title,
     description,
     status,
@@ -414,6 +348,7 @@ const createTask = asyncHandler(async (req, res) => {
   } = req.body;
   const userId = req.user._id;
   const personalTask = await personalTaskModel.create({
+    project,
     user: userId,
     title,
     description,
@@ -719,6 +654,87 @@ const deleteTaskPermanently = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Task deleted permanently.", result));
 });
 
+const createProject = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { name } = req.body;
+
+  const existingProject = await projectModel.findOne({
+    name: name,
+    user: userId,
+  });
+
+  if (existingProject) {
+    res.status(400).json(new ApiResponse(400, "Project already exists."));
+  }
+
+  const project = await projectModel.create({
+    name,
+    user: userId,
+  });
+
+  res.status(200).json(new ApiResponse(200, "Project created.", project));
+});
+
+const changeProjectName = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { id: projectId } = req.params;
+  const { name } = req.body;
+
+  const project = await projectModel.findOneAndUpdate(
+    { _id: projectId, user: userId },
+    { $set: { name } },
+    { new: true }
+  );
+
+  if (!project) {
+    res.status(404).json(new ApiResponse(404, "Project not found."));
+  }
+
+  res.status(200).json(new ApiResponse(200, "Project name changed.", project));
+});
+
+const deleteProject = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { id: projectId } = req.params;
+
+  // delete all tasks of the project and remove the project field
+
+  await personalTaskModel.updateMany(
+    { project: projectId, user: userId },
+    { $unset: { project: "" }, $set: { isDeleted: true } }
+  );
+
+  const project = await projectModel.findOneAndDelete({
+    _id: projectId,
+    user: userId,
+  });
+
+  if (!project) {
+    res.status(404).json(new ApiResponse(404, "Project not found."));
+  }
+
+  res.status(200).json(new ApiResponse(200, "Project deleted."));
+});
+
+const moveTaskToProject = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { id: projectId, taskId } = req.params;
+
+  const task = await personalTaskModel.findOneAndUpdate(
+
+    { _id: taskId, user: userId },
+    { $set: { project: projectId } },
+    { new: true }
+  );
+
+  if (!task) {
+    res.status(404).json(new ApiResponse(404, "Task not found."));
+  }
+
+  res.status(200).json(new ApiResponse(200, "Task moved to project.", task));
+
+})
+
 export {
   getAllPersonalTasks,
   createTask,
@@ -737,4 +753,8 @@ export {
   getOverview,
   getPersonalTaskDetails,
   changeTaskStatusToInProgress,
+  createProject,
+  changeProjectName,
+  deleteProject,
+  moveTaskToProject
 };

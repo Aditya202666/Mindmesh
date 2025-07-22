@@ -15,6 +15,11 @@ const subTaskSchema = new mongoose.Schema({
 
 const personalTaskSchema = new mongoose.Schema(
     {
+        project: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Project",
+        },
+
         user:{
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",

@@ -6,11 +6,8 @@ import {
 } from "../validators/userValidator.js";
 import inputErrorHandler from "../middlewares/inputErrorHandler.js";
 import {
-  acceptInvitation,
   checkUsername,
-  declineInvitation,
   deleteProfilePic,
-  getUserInvitations,
   updateProfile,
   updateProfilePic,
 } from "../controllers/userController.js";
@@ -32,10 +29,5 @@ router.route("/profilePic").patch(upload.single("avatar"), updateProfilePic);
 
 router.route("/profilePic").delete(deleteProfilePic);
 
-router.route("/invitations").get(getUserInvitations);
-
-router.route("/accept-invitation/:invitationId").post(acceptInvitation);
-
-router.route("/decline-invitation/:invitationId").post(declineInvitation);
-
+ 
 export default router;

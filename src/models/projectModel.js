@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const projectSchema = new mongoose.Schema({
 
-    workspace: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Workspace",
+        ref: "User",
         required: true,
         index: true
     },

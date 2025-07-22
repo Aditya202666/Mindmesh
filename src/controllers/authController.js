@@ -15,6 +15,7 @@ import { generateOtpEmailTemplate, sendEmail } from "../utils/sendEmail.js";
 import { transformUser } from "../utils/transformData.js";
 import {checkUsernameExists} from "../utils/check.js";
 import personalTaskModel from "../models/personalTaskModel.js";
+import projectModel from "../models/projectModel.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { username, fullname, email, password } = req.body;
@@ -66,7 +67,10 @@ const registerUser = asyncHandler(async (req, res) => {
             new ApiResponse(
                 201,
                 "User registered successfully",
-                transformUser(user)
+                {
+                    user: transformUser(user),
+                    projects: [],
+                }
             )
         );
 });
@@ -93,6 +97,8 @@ const loginUser = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
+    const projects = await projectModel.find({ user: user._id });
+
     // console.log(user);
 
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
@@ -103,7 +109,10 @@ const loginUser = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 "User logged in successfully",
-                transformUser(user)
+                {
+                    user: transformUser(user),
+                    projects,
+                }
             )
         );
 });    
@@ -146,6 +155,8 @@ const refreshToken = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
+    const projects = await projectModel.find({ user: user._id });
+
     // console.log(user);
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)
@@ -155,7 +166,10 @@ const refreshToken = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 "User logged in successfully",
-                transformUser(user)
+                {
+                    user: transformUser(user),
+                    projects,
+                }
             )
         );
 });
@@ -233,7 +247,12 @@ const verifyAccountVerificationOtp = asyncHandler(async (req, res) => {
     user.otpSentTime = 0;
     await user.save();
 
-    res.status(200).json(new ApiResponse(200, "User verified successfully", transformUser(user)));
+    const projects = await projectModel.find({ user: user._id });
+
+    res.status(200).json(new ApiResponse(200, "User verified successfully", {
+        user: transformUser(user),
+        projects
+    }));
 });
 
 const sendForgotPasswordOtp = asyncHandler(async (req, res) => {
@@ -288,6 +307,8 @@ const verifyForgotPasswordOtp = asyncHandler(async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
+    const projects = await projectModel.find({ user: user._id });
+
     // console.log(user);
     res.cookie(refreshTokenCookie, refreshToken, secureCookieOptions)
         .cookie(MindCookie, accessToken, secureCookieOptions)
@@ -297,7 +318,10 @@ const verifyForgotPasswordOtp = asyncHandler(async (req, res) => {
             new ApiResponse(
                 200,
                 "User logged in successfully",
-                transformUser(user)
+                {
+                    user: transformUser(user),
+                    projects
+                }
             )
         );
 });

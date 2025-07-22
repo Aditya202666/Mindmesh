@@ -19,8 +19,13 @@ import {
     getOverview,
     getPersonalTaskDetails,
     changeTaskStatusToInProgress,
+    createProject,
+    changeProjectName,
+    deleteProject,
+    moveTaskToProject,
 } from "../controllers/personalTaskController.js";
 import {
+    nameValidator,
     subTaskValidator,
     taskValidator,
 } from "../validators/taskValidators.js";
@@ -44,6 +49,18 @@ router.route("/:id").get(getPersonalTask);
 
 //--create task, not subTask
 router.route("/create").post(taskValidator, inputErrorHandler, createTask);
+
+// create project
+router.route("/project/create").post(nameValidator, inputErrorHandler, createProject);
+
+// change project name
+router.route("/project/:id").patch(nameValidator, inputErrorHandler,  changeProjectName);
+
+//delete project
+router.route("/project/:id").delete( deleteProject);
+
+//move task to project
+router.route("/project/:id/:taskId").patch(moveTaskToProject);
    
 //--add subtasks
 router.route("/:id/sub-task").post(subTaskValidator, inputErrorHandler, createSubTask);
