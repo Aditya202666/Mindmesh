@@ -50,11 +50,11 @@ router.route("/:id").get(getPersonalTask);
 //--create task, not subTask
 router.route("/create").post(taskValidator, inputErrorHandler, createTask);
 
-// create project
-router.route("/project/create").post(nameValidator, inputErrorHandler, createProject);
+// --create project
+router.route("/project/create").post(nameValidator(50), inputErrorHandler, createProject);
 
 // change project name
-router.route("/project/:id").patch(nameValidator, inputErrorHandler,  changeProjectName);
+router.route("/project/:id").patch(nameValidator(50), inputErrorHandler,  changeProjectName);
 
 //delete project
 router.route("/project/:id").delete( deleteProject);
@@ -68,7 +68,7 @@ router.route("/:id/sub-task").post(subTaskValidator, inputErrorHandler, createSu
 //--delete subTasks
 router.route("/:id/:subId").delete(removeSubTask);
 
-//--update task
+//--update task 
 router.route("/:id").patch(taskValidator, inputErrorHandler, editPersonalTask);
 
 // -- change task status to in-progress

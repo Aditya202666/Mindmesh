@@ -1,6 +1,8 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import personalTaskModel from "../models/personalTaskModel.js";
+import projectModel from "../models/projectModel.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 
 const getOverview = asyncHandler(async (req, res) => {
   const id = req.user._id;
@@ -34,6 +36,26 @@ const getOverview = asyncHandler(async (req, res) => {
     },
   };
 
+  // look up form personal task to project and spread to get first element of lookup array
+  const projectLookUpStage = {
+    from: "projects",
+    localField: "project",
+    foreignField: "_id",
+    as: "project",
+    pipeline: [
+      {
+        $project: {
+          name: 1,
+        },
+      },
+    ],
+  };
+
+  const projectUnwindStage = {
+    path: "$project",
+    preserveNullAndEmptyArrays: true, // optional: keeps documents without a match
+  };
+
   const overview = await personalTaskModel.aggregate([
     {
       $facet: {
@@ -46,7 +68,10 @@ const getOverview = asyncHandler(async (req, res) => {
               dueDate: { $gte: today, $lt: nextSevenDays },
             },
           },
+          { $lookup: projectLookUpStage },
+          { $unwind: projectUnwindStage },
           { $addFields: subTaskAddFieldStage },
+
           {
             $sort: { dueDate: 1 },
           },
@@ -64,6 +89,8 @@ const getOverview = asyncHandler(async (req, res) => {
               dueDate: { $gte: today },
             },
           },
+          { $lookup: projectLookUpStage },
+          { $unwind: projectUnwindStage },
           { $addFields: subTaskAddFieldStage },
 
           {
@@ -82,6 +109,8 @@ const getOverview = asyncHandler(async (req, res) => {
               dueDate: { $gte: firstOfLastMonth, $lt: today },
             },
           },
+          { $lookup: projectLookUpStage },
+          { $unwind: projectUnwindStage },
           { $addFields: subTaskAddFieldStage },
 
           {
@@ -98,6 +127,8 @@ const getOverview = asyncHandler(async (req, res) => {
               isDeleted: false,
             },
           },
+          { $lookup: projectLookUpStage },
+          { $unwind: projectUnwindStage },
           { $addFields: subTaskAddFieldStage },
           {
             $sort: { createdAt: -1 },
@@ -245,6 +276,7 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
   const searchQuery = req.query.searchQuery || "";
   const limit = 20;
   const skip = (page - 1) * limit;
+  const projectId = req.query.projectId || null;
   let fromDate = new Date(req.query.fromDate);
 
   const now = new Date();
@@ -255,6 +287,10 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
     isDeleted: false,
     // createdAt: { $gte: fromDate },
   };
+
+  if (projectId) {
+    matchStage.project = new mongoose.Types.ObjectId(`${projectId}`);
+  }
 
   if (status === "Pending") {
     matchStage.dueDate = { $gte: fromDate, $ne: null };
@@ -298,6 +334,27 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
                   },
                 },
               },
+            },
+          },
+          {
+            $lookup: {
+              from: "projects",
+              localField: "project",
+              foreignField: "_id",
+              as: "project",
+              pipeline: [
+                {
+                  $project: {
+                    name: 1,
+                  },
+                },
+              ],
+            },
+          },
+          {
+            $unwind: {
+              path: "$project",
+              preserveNullAndEmptyArrays: true, // optional: keeps documents without a match
             },
           },
           {
@@ -414,6 +471,7 @@ const editPersonalTask = asyncHandler(async (req, res) => {
   const { id: taskId } = req.params;
   const userId = req.user._id;
   const {
+    project,
     title,
     description,
     dueDate = null,
@@ -427,6 +485,7 @@ const editPersonalTask = asyncHandler(async (req, res) => {
     { _id: taskId, isDeleted: false, user: userId },
     {
       $set: {
+        project,
         title,
         description,
         dueDate,
@@ -561,10 +620,12 @@ const subTaskCompleted = asyncHandler(async (req, res) => {
 const getPersonalTask = asyncHandler(async (req, res) => {
   const { id: taskId } = req.params;
   const userId = req.user._id;
-  const personalTask = await personalTaskModel.findOne({
-    _id: taskId,
-    user: userId,
-  });
+  const personalTask = await personalTaskModel
+    .findOne({
+      _id: taskId,
+      user: userId,
+    })
+    .populate({ path: "project", select: "name _id" });
 
   if (!personalTask) {
     res.status(404).json(new ApiResponse(404, "Task not found."));
@@ -657,9 +718,9 @@ const deleteTaskPermanently = asyncHandler(async (req, res) => {
 const createProject = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { name } = req.body;
-
+  console.log(name);
   const existingProject = await projectModel.findOne({
-    name: name,
+    name,
     user: userId,
   });
 
@@ -672,7 +733,7 @@ const createProject = asyncHandler(async (req, res) => {
     user: userId,
   });
 
-  res.status(200).json(new ApiResponse(200, "Project created.", project));
+  res.status(201).json(new ApiResponse(201, "Project created.", project));
 });
 
 const changeProjectName = asyncHandler(async (req, res) => {
@@ -721,7 +782,6 @@ const moveTaskToProject = asyncHandler(async (req, res) => {
   const { id: projectId, taskId } = req.params;
 
   const task = await personalTaskModel.findOneAndUpdate(
-
     { _id: taskId, user: userId },
     { $set: { project: projectId } },
     { new: true }
@@ -732,8 +792,7 @@ const moveTaskToProject = asyncHandler(async (req, res) => {
   }
 
   res.status(200).json(new ApiResponse(200, "Task moved to project.", task));
-
-})
+});
 
 export {
   getAllPersonalTasks,
@@ -756,5 +815,5 @@ export {
   createProject,
   changeProjectName,
   deleteProject,
-  moveTaskToProject
+  moveTaskToProject,
 };
