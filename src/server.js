@@ -9,10 +9,10 @@ dotenv.config();
     try {
         await connectDb();
         app.listen(port, () => {
-            console.log(`Server is Running: http://localhost:${port}`);
+            // console.log(`Server is Running: http://localhost:${port}`);
         });
     } catch (error) {
-        console.log(`error in server.js ${error}`);
+        // console.log(`error in server.js ${error}`);
         process.exit(1);
     }
 })();

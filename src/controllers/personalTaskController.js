@@ -277,20 +277,27 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
   const limit = 20;
   const skip = (page - 1) * limit;
   const projectId = req.query.projectId || null;
+  const isDeleted = req.query.isDeleted || false;
   let fromDate = new Date(req.query.fromDate);
-
+  // console.log(req.query.fromDate);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const matchStage = {
-    user: id,
-    isDeleted: false,
+  const matchStage = { 
+    user: id, 
+    isDeleted: isDeleted,
     // createdAt: { $gte: fromDate },
   };
+
+  if(isDeleted){
+    isDeleted: true
+  }
+
 
   if (projectId) {
     matchStage.project = new mongoose.Types.ObjectId(`${projectId}`);
   }
+
 
   if (status === "Pending") {
     matchStage.dueDate = { $gte: fromDate, $ne: null };
@@ -315,7 +322,7 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
     ...matchStage,
     ...(searchQuery ? { $text: { $search: searchQuery } } : {}),
   };
-  console.log(baseMatch);
+  // console.log(baseMatch);
   const aggregatePipeline = [
     { $match: baseMatch },
     ...(searchQuery ? [{ $addFields: { score: { $meta: "textScore" } } }] : []),
@@ -385,16 +392,16 @@ const getAllPersonalTasks = asyncHandler(async (req, res) => {
   ];
 
   const personalTasks = await personalTaskModel.aggregate(aggregatePipeline);
-
+  // console.log(personalTasks);
   res
     .status(200)
     .json(new ApiResponse(200, "personalTasks found.", personalTasks[0]));
 });
 
 const createTask = asyncHandler(async (req, res) => {
-  console.log("Creating a new personal task", req.body);
+  // console.log("Creating a new personal task", req.body);
   const {
-    project,
+    project = null,
     title,
     description,
     status,
@@ -424,7 +431,7 @@ const createTask = asyncHandler(async (req, res) => {
 const createSubTask = asyncHandler(async (req, res) => {
   const { id: taskId } = req.params;
   const userId = req.user._id;
-  console.log(taskId, userId);
+  // console.log(taskId, userId);
   const { title } = req.body;
 
   const personalTask = await personalTaskModel.findOneAndUpdate(
@@ -718,14 +725,14 @@ const deleteTaskPermanently = asyncHandler(async (req, res) => {
 const createProject = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { name } = req.body;
-  console.log(name);
+  // console.log(name);
   const existingProject = await projectModel.findOne({
     name,
     user: userId,
   });
 
   if (existingProject) {
-    res.status(400).json(new ApiResponse(400, "Project already exists."));
+    throw new Error("Project already exists.");
   }
 
   const project = await projectModel.create({

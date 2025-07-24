@@ -53,8 +53,9 @@ router.route("/create").post(taskValidator, inputErrorHandler, createTask);
 // --create project
 router.route("/project/create").post(nameValidator(50), inputErrorHandler, createProject);
 
-// change project name
+// --change project name
 router.route("/project/:id").patch(nameValidator(50), inputErrorHandler,  changeProjectName);
+
 
 //delete project
 router.route("/project/:id").delete( deleteProject);

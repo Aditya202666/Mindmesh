@@ -44,7 +44,7 @@ router
     .route("/verify-account-otp")
     .post(verifyAccountVerificationOtp);
 
-router.route("/password-otp").post(sendForgotPasswordOtp);
+router.route("/password-otp").post(sendForgotPasswordOtp); 
 
 
 router.route("/verify-password-otp").post(verifyForgotPasswordOtp);
