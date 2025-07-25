@@ -8,7 +8,7 @@ const verifyToken = async (req, res, next) => {
     let MindToken = req.cookies?.Mind;
     let MeshToken = req.headers["mesh"];
     // console.log(MindToken, MeshToken, refreshToken);
-    // console.log("headers", req.headers);
+    console.log("headers", req.headers);
 
     // console.log("Parsed Cookies:", req.cookies);
     // console.log("Mind:", req.cookies?.Mind);
