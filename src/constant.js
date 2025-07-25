@@ -1,5 +1,5 @@
 export const port = process.env.Port || 3030
-export const corsOrigin = "http://localhost:5173";
+export const corsOrigin = "https://mindmesh-frontend.onrender.com"   //"http://localhost:5173";
 export const DB_NAME = "Mindmesh"
 
 
